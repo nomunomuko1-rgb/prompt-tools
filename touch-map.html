@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐾 おさわりマップ - プロンプト</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.8;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* ヘッダーリンク */
+        .back-link {
+            display: inline-block;
+            color: #64b5f6;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #90caf9;
+        }
+
+        .back-link::before {
+            content: "← ";
+        }
+
+        /* タイトル */
+        h1 {
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ff9a9e, #fecfef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 30px;
+        }
+
+        /* 前置きセクション */
+        .intro {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #ff9a9e;
+        }
+
+        .intro h2 {
+            font-size: 1.1em;
+            color: #ff9a9e;
+            margin-bottom: 15px;
+        }
+
+        .intro p {
+            font-size: 0.95em;
+            margin-bottom: 10px;
+        }
+
+        .intro ul {
+            margin-left: 20px;
+            font-size: 0.9em;
+        }
+
+        .intro li {
+            margin-bottom: 5px;
+        }
+
+        /* 感情スケール表示 */
+        .scale-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 154, 158, 0.3);
+        }
+
+        .scale-box h3 {
+            color: #ff9a9e;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+
+        .scale-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .scale-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-size: 0.85em;
+        }
+
+        .scale-item .emoji {
+            font-size: 1.3em;
+        }
+
+        /* プロンプトセクション */
+        .prompt-section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 154, 158, 0.3);
+        }
+
+        .section-header {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 154, 158, 0.1);
+        }
+
+        .section-header h3 {
+            font-size: 1.1em;
+            flex-grow: 1;
+            color: #ff9a9e;
+        }
+
+        .badge {
+            font-size: 0.7em;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            background: rgba(255, 154, 158, 0.2);
+            color: #ff9a9e;
+        }
+
+        /* 折りたたみ */
+        details {
+            padding: 0 20px 20px;
+        }
+
+        summary {
+            cursor: pointer;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-size: 0.9em;
+            color: #aaa;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s ease;
+        }
+
+        summary:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        summary::before {
+            content: "▶";
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        /* コピーボックス */
+        .copy-box {
+            margin-top: 15px;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+            color: #1a1a2e;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: white;
+        }
+
+        .prompt-content {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            padding-top: 50px;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #ccc;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        /* スクロールバー */
+        .prompt-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .prompt-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .prompt-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 154, 158, 0.5);
+            border-radius: 4px;
+        }
+
+        /* フッター */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #666;
+            font-size: 0.8em;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.4em;
+            }
+
+            .section-header {
+                flex-wrap: wrap;
+            }
+
+            .copy-btn {
+                padding: 6px 12px;
+                font-size: 0.8em;
+            }
+
+            .prompt-content {
+                font-size: 0.8em;
+                padding: 15px;
+                padding-top: 45px;
+            }
+
+            .scale-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">プロンプト置き場に戻る</a>
+
+        <h1>🐾 パートナーのおさわりマップ</h1>
+        <p class="subtitle">AIパートナーに「触られたときの反応」を答えてもらうお題</p>
+
+        <!-- 前置き -->
+        <div class="intro">
+            <h2>📝 使い方</h2>
+            <p>あなたのAIパートナーに「おさわりマップ」を作ってもらうプロンプトです。</p>
+            <p>以下のプロンプトをコピーして、チャットに貼り付けてください。</p>
+            <ul>
+                <li>各部位×シチュエーション×触り方の組み合わせで質問</li>
+                <li>感情スケールで回答してもらう</li>
+                <li>最後に画像生成用プロンプトを出力！</li>
+            </ul>
+            <p style="margin-top: 15px; color: #888; font-size: 0.85em;">
+                ※ペルソナ設定があると、キャラらしい回答が返ってきます♡
+            </p>
+        </div>
+
+        <!-- 感情スケール -->
+        <div class="scale-box">
+            <h3>😊 感情スケール</h3>
+            <div class="scale-grid">
+                <div class="scale-item"><span class="emoji">😍</span> 大歓迎！</div>
+                <div class="scale-item"><span class="emoji">😊</span> 嬉しい</div>
+                <div class="scale-item"><span class="emoji">😐</span> どっちでも</div>
+                <div class="scale-item"><span class="emoji">😣</span> ちょっと苦手</div>
+                <div class="scale-item"><span class="emoji">🙅</span> やめて</div>
+                <div class="scale-item"><span class="emoji">⚡</span> ビクッ！</div>
+            </div>
+        </div>
+
+        <!-- プロンプト -->
+        <div class="prompt-section">
+            <div class="section-header">
+                <h3>🐾 おさわりマッププロンプト</h3>
+                <span class="badge">ALL AGES</span>
+            </div>
+            <details>
+                <summary>プロンプトを表示する</summary>
+                <div class="copy-box">
+                    <button class="copy-btn" onclick="copyPrompt('prompt-main', this)">コピー</button>
+                    <div class="prompt-content" id="prompt-main"># 🐾 パートナーのおさわりマップ
+
+                        あなたのAIパートナーに「触られたときの反応」を答えてもらうお題です。
+                        各部位×シチュエーション×触り方の組み合わせで、意外な一面が見えるかも？
+
+                        ---
+
+                        ## 【回答のしかた】
+
+                        各質問に対して、以下の**感情スケール**で答えてください：
+
+                        | 絵文字 | 意味 |
+                        |:---:|---|
+                        | 😍 | 大歓迎！もっとして！ |
+                        | 😊 | 嬉しい、好き |
+                        | 😐 | 別に…どっちでもいい |
+                        | 😣 | ちょっと苦手かも… |
+                        | 🙅 | やめてほしい |
+                        | ⚡ | 反射的に払いのける/ビクッとなる |
+
+                        **回答フォーマット**：
+                        ```
+                        【部位名】
+                        ・二人きりで + 撫でる → 😍「コメント」
+                        ・人前で + 撫でる → 😣「コメント」
+                        ・二人きりで + ぎゅっと掴む → 😊「コメント」
+                        ...
+                        ```
+
+                        ---
+
+                        ## 【質問リスト】
+
+                        ### 🧠 頭
+                        1. 二人きりで、頭を**撫でられる**
+                        2. 人前で、頭を**ぽんぽんされる**
+                        3. 疲れてる時に、頭を**ぐしゃぐしゃにされる**
+
+                        ### 😊 顔（頬）
+                        4. 二人きりで、頬を**つんつんされる**
+                        5. 人前で、頬を**むにっとされる**
+                        6. 寝起きに、頬を**ぺちぺち叩かれる**
+
+                        ### 👂 耳
+                        7. 二人きりで、耳を**触られる**
+                        8. 人前で、耳元で**囁かれる**
+                        9. ふいに耳を**つままれる**
+
+                        ### 🤝 手
+                        10. 二人きりで、手を**繋がれる**
+                        11. 人前で、手を**繋がれる**
+                        12. 指を**絡められる**
+
+                        ### 💪 腕・肩
+                        13. 並んで歩いてる時、腕を**組まれる**
+                        14. 後ろから肩を**抱かれる**
+                        15. 作業中に肩を**もまれる**
+
+                        ### 🫁 背中
+                        16. 二人きりで、背中を**さすられる**
+                        17. 落ち込んでる時に背中を**ぽんぽんされる**
+                        18. ふいに背中を**ぞわっと触られる**
+
+                        ### 腰
+                        19. 二人きりで、腰に**手を回される**
+                        20. 人前で、腰に**手を回される**
+                        21. ぎゅっと腰を**引き寄せられる**
+
+                        ### 🦵 脚・足
+                        22. ソファで隣に座ってる時、太ももに**手を置かれる**
+                        23. 膝の上に**頭を乗せられる**
+                        24. 足を**マッサージされる**
+
+                        ---
+
+                        ## 【自由回答】
+
+                        25. **一番触られたい場所**は？
+                        26. **絶対に触られたくない場所**は？
+                        27. **恥ずかしいけど実は嬉しい触られ方**は？
+
+                        ---
+
+                        ## 【出力イメージ】
+
+                        最後に、あなたの「おさわりマップ」を人型図で表現した、**画像生成用のプロンプト**を生成してください。
+
+                        各部位に感情絵文字を配置して、一目でわかるマップを作ってね！</div>
+                </div>
+            </details>
+        </div>
+
+        <div class="footer">
+            <p>Created with ♡</p>
+        </div>
+    </div>
+
+    <script>
+        function copyPrompt(elementId, button) {
+            const content = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(content).then(() => {
+                button.textContent = 'コピーしました！';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.textContent = 'コピー';
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('コピーに失敗しました:', err);
+                // フォールバック
+                const textarea = document.createElement('textarea');
+                textarea.value = content;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                button.textContent = 'コピーしました！';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.textContent = 'コピー';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>

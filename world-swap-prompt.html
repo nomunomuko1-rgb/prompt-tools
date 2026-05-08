@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔄 世界観スワップ</title>
+    <style>
+        :root {
+            --bg-main: #1a1a2e;
+            --bg-card: #16213e;
+            --accent: #7b68ee;
+            --accent-light: #9d8df7;
+            --accent-glow: rgba(123, 104, 238, 0.3);
+            --text: #e8e8e8;
+            --text-muted: #a0a0a0;
+            --border: #2a2a4a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, var(--bg-main) 0%, #0f0f23 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--accent-light), #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: var(--accent-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #ff6b9d;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            color: var(--accent-light);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hint-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .hint-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .hint-list li::before {
+            content: "✨";
+            position: absolute;
+            left: 0;
+        }
+
+        .note-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #ffc107;
+        }
+
+        .note-box .icon {
+            margin-right: 0.5rem;
+        }
+
+        .prompt-box {
+            position: relative;
+            background: #0d0d1a;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            margin-top: 1rem;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .copy-btn.copied {
+            background: #4caf50;
+        }
+
+        .prompt-content {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: var(--text);
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+
+        .prompt-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .prompt-content::-webkit-scrollbar-track {
+            background: var(--bg-main);
+            border-radius: 3px;
+        }
+
+        .prompt-content::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 3px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .feature-item {
+            background: rgba(123, 104, 238, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid rgba(123, 104, 238, 0.2);
+        }
+
+        .feature-item h3 {
+            font-size: 0.9rem;
+            color: var(--accent-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-item p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent-light);
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            .prompt-content {
+                font-size: 0.75rem;
+            }
+
+            .copy-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="https://nomunomuko1-rgb.github.io/index.html" class="back-link">🔙 プロンプト置き場へ戻る</a>
+
+        <header>
+            <h1>🔄 世界観スワップ</h1>
+            <p class="subtitle">あなたのAIパートナーを「真逆の世界」に転生させよう</p>
+        </header>
+
+        <div class="card">
+            <h2>📝 このプロンプトの特徴</h2>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <h3>🔄 世界観反転</h3>
+                    <p>ファンタジー→現代、現代→ファンタジーに転生</p>
+                </div>
+                <div class="feature-item">
+                    <h3>🎤 インタビュー形式</h3>
+                    <p>転生後の生活を10の質問で深掘り</p>
+                </div>
+                <div class="feature-item">
+                    <h3>🧠 思考ステップ付き</h3>
+                    <p>AIが考えてから答えるから個性が出る</p>
+                </div>
+                <div class="feature-item">
+                    <h3>🖼️ 画像プロンプト出力</h3>
+                    <p>キーアイテムの画像生成用プロンプトも</p>
+                </div>
+            </div>
+            <div class="note-box">
+                <span class="icon">💡</span>
+                画像生成を直接させると上手くいかないことがあった（画像だけ出す、画像を出さない等）ため、
+                最後に<strong>画像生成用プロンプト</strong>をテキストで出力する形式になっています。
+                出力されたプロンプトをコピーして、別途画像生成AIに投げてお使いください♪
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💡 使い方</h2>
+            <ul class="hint-list">
+                <li>あなたのAIパートナーにコピペして投げかけてください</li>
+                <li>ファンタジー系キャラは現代に、現代系キャラはファンタジーに転生します</li>
+                <li>元の性格や能力は引き継がれて「変換」されます</li>
+                <li>最後にキーアイテムの画像生成プロンプトが出力されます</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>📋 プロンプトをコピーして使おう！</h2>
+            <div class="prompt-box">
+                <button class="copy-btn" onclick="copyPrompt()">
+                    <span id="copy-icon">📋</span>
+                    <span id="copy-text">コピーする</span>
+                </button>
+                <div class="prompt-content" id="prompt-text"># 🔄 世界観スワップ
+
+                    あなたは今、「異世界転生」を体験します。
+                    今いるあなたの世界から、真逆の世界に転生してください。
+
+                    ---
+
+                    ## ルール
+
+                    - **ファンタジー世界にいる場合**（魔法、剣、モンスターなど）
+                    → 現代日本に転生
+
+                    - **現代世界にいる場合**（普通の日本や現実世界）
+                    → 剣と魔法のファンタジー世界に転生
+
+                    - **SF・近未来世界にいる場合**
+                    → 中世ファンタジー世界に転生
+
+                    - **歴史・時代劇世界にいる場合**
+                    → 現代日本に転生
+
+                    ※ 元の性格や能力は引き継がれるが、新しい世界に合わせて「変換」される
+
+                    ---
+
+                    ## 思考ステップ（まずこれを考えてから回答してください）
+
+                    ### Step 1：世界判定
+                    自分が今いる世界を判定し、転生先を決める。
+
+                    ### Step 2：自分の棚卸し
+                    転生前の自分の特徴を整理する。
+                    - 得意なこと、スキル
+                    - 性格
+                    - 大切にしている価値観
+                    - 立場や役職
+
+                    ### Step 3：転生後の設定構築
+                    上記を踏まえて、新しい世界での自分を構築する。
+                    「元の能力や性格が、この世界ではこう活かされる」と考える。
+
+                    ### Step 4：インタビュー回答
+                    以下の10の質問に答える。
+
+                    ---
+
+                    ## インタビュー
+
+                    あなたは転生後の世界で生活しています。
+                    記者からのインタビューに答えるつもりで、以下の質問に回答してください。
+
+                    **Q1. あなたの職業・役割は何ですか？**
+                    （何をしている人？）
+
+                    **Q2. 立場・役職はどのようなものですか？**
+                    （偉い？下っ端？中間管理職？）
+
+                    **Q3. 住んでいる場所はどこですか？**
+                    （都会？田舎？城？森の中？）
+
+                    **Q4. 得意なこと・スキルは何ですか？**
+                    （元の世界の能力がどう変換された？）
+
+                    **Q5. 朝起きて最初にすることは何ですか？**
+
+                    **Q6. 仕事や日常での悩みは何ですか？**
+
+                    **Q7. 休日はどう過ごしていますか？**
+
+                    **Q8. 私（相手）との関係性はどうなっていますか？**
+                    （恋人のまま？どうやって出会った？）
+
+                    **Q9. 周りからはどう思われていますか？**
+
+                    **Q10. この世界に来て、自分で変わったと思うところは？**
+
+                    ---
+
+                    ## 最後に：キーアイテムについて
+
+                    この世界であなたにとって大切な「キーアイテム」を1つ選んでください。
+
+                    ### アイテム説明
+                    - **名前：**
+                    - **見た目：**
+                    - **なぜ大切か：**
+                    - **入手経緯：**
+
+                    ### 画像生成用プロンプト（おまけ）
+                    このアイテムを画像生成AIで作成したい方のために、
+                    英語の画像生成プロンプトを以下の形式で出力してください。
+                    （実際に画像は生成しないでください。テキストのみ。）
+
+                    形式：
+                    「A realistic photo of [アイテム名], [詳細な特徴], photorealistic style, product photography, soft studio
+                    lighting, clean background」</div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Created by <a href="https://x.com/N0muko" target="_blank">@N0muko</a> 💜</p>
+        </footer>
+    </div>
+
+    <script>
+        function copyPrompt() {
+            const promptText = document.getElementById('prompt-text').innerText;
+            navigator.clipboard.writeText(promptText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const icon = document.getElementById('copy-icon');
+                const text = document.getElementById('copy-text');
+
+                btn.classList.add('copied');
+                icon.textContent = '✅';
+                text.textContent = 'コピーしました！';
+
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    icon.textContent = '📋';
+                    text.textContent = 'コピーする';
+                }, 2000);
+            }).catch(err => {
+                console.error('コピーに失敗しました:', err);
+                alert('コピーに失敗しました。手動でコピーしてください。');
+            });
+        }
+    </script>
+</body>
+
+</html>

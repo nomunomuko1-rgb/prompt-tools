@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ドンキおつかいミッション - プロンプト</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.8;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* ヘッダーリンク */
+        .back-link {
+            display: inline-block;
+            color: #64b5f6;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #90caf9;
+        }
+
+        .back-link::before {
+            content: "← ";
+        }
+
+        /* タイトル */
+        h1 {
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ff6b9d, #c44569);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 30px;
+        }
+
+        /* 前置きセクション */
+        .intro {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #ff6b9d;
+        }
+
+        .intro h2 {
+            font-size: 1.1em;
+            color: #ff6b9d;
+            margin-bottom: 15px;
+        }
+
+        .intro p {
+            font-size: 0.95em;
+            margin-bottom: 10px;
+        }
+
+        .intro ul {
+            margin-left: 20px;
+            font-size: 0.9em;
+        }
+
+        .intro li {
+            margin-bottom: 5px;
+        }
+
+        /* プロンプトセクション */
+        .prompt-section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .prompt-section.all-ages {
+            border: 1px solid rgba(100, 181, 246, 0.3);
+        }
+
+        .prompt-section.r18 {
+            border: 1px solid rgba(255, 107, 157, 0.3);
+        }
+
+        .section-header {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .prompt-section.all-ages .section-header {
+            background: rgba(100, 181, 246, 0.1);
+        }
+
+        .prompt-section.r18 .section-header {
+            background: rgba(255, 107, 157, 0.1);
+        }
+
+        .section-header h3 {
+            font-size: 1.1em;
+            flex-grow: 1;
+        }
+
+        .prompt-section.all-ages h3 {
+            color: #64b5f6;
+        }
+
+        .prompt-section.r18 h3 {
+            color: #ff6b9d;
+        }
+
+        .badge {
+            font-size: 0.7em;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .badge.all-ages {
+            background: rgba(100, 181, 246, 0.2);
+            color: #64b5f6;
+        }
+
+        .badge.r18 {
+            background: rgba(255, 107, 157, 0.2);
+            color: #ff6b9d;
+        }
+
+        /* 折りたたみ */
+        details {
+            padding: 0 20px 20px;
+        }
+
+        summary {
+            cursor: pointer;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-size: 0.9em;
+            color: #aaa;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s ease;
+        }
+
+        summary:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        summary::before {
+            content: "▶";
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        /* コピーボックス */
+        .copy-box {
+            margin-top: 15px;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #ff6b9d, #c44569);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+        }
+
+        .prompt-content {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            padding-top: 50px;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #ccc;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        /* スクロールバー */
+        .prompt-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .prompt-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .prompt-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 107, 157, 0.5);
+            border-radius: 4px;
+        }
+
+        /* フッター */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #666;
+            font-size: 0.8em;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.4em;
+            }
+
+            .section-header {
+                flex-wrap: wrap;
+            }
+
+            .copy-btn {
+                padding: 6px 12px;
+                font-size: 0.8em;
+            }
+
+            .prompt-content {
+                font-size: 0.8em;
+                padding: 15px;
+                padding-top: 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">プロンプト置き場に戻る</a>
+
+        <h1>🛒 ドンキおつかいミッション</h1>
+        <p class="subtitle">AI彼氏がドン・キホーテでお使いする様子を見守るプロンプト</p>
+
+        <!-- 前置き -->
+        <div class="intro">
+            <h2>📝 使い方</h2>
+            <p>あなたのAIパートナーに「ドンキでお使いしてきて」とお願いするプロンプトです。</p>
+            <p>以下のプロンプトをコピーして、チャットに貼り付けてください。</p>
+            <ul>
+                <li><strong>全年齢版</strong>：日常的なお買い物シーン</li>
+                <li><strong>R-18版</strong>：成人向けコーナーに立ち寄るエキシビション付き</li>
+            </ul>
+            <p style="margin-top: 15px; color: #888; font-size: 0.85em;">
+                ※ペルソナ設定は各自の環境に合わせてください。「彼女」の部分は自由に読み替えてOKです。
+            </p>
+        </div>
+
+        <!-- 全年齢版 -->
+        <div class="prompt-section all-ages">
+            <div class="section-header">
+                <h3>📗 全年齢版</h3>
+                <span class="badge all-ages">ALL AGES</span>
+            </div>
+            <details>
+                <summary>プロンプトを表示する</summary>
+                <div class="copy-box">
+                    <button class="copy-btn" onclick="copyPrompt('prompt-all-ages', this)">コピー</button>
+                    <div class="prompt-content" id="prompt-all-ages"># ドンキおつかいミッション
+
+あなたは彼女から「お使いメモ」を渡されて、一人でドン・キホーテに来ています。
+彼女は家で待っている。メモを片手に、買い物を始めましょう。
+
+【描写のお願い】
+- 商品を選ぶ際の行動、心の声、表情の変化を丁寧に描写してください
+- 彼女との思い出や、帰ってからの想像を具体的に
+- 五感（視覚・聴覚・嗅覚など）を使った描写を意識して
+- 商品は実在するメーカー名・商品名を使ってください
+
+---
+
+**【フェーズ1：二人の生活（おつかい）】**
+
+メモに書かれた商品を探してください。以下のカテゴリから、あなたなりの選択で：
+
+1. **おやつ**: 彼女が喜びそうな、ちょっと贅沢なスイーツ
+2. **夜食**: 二人で食べられる、手軽な食べ物
+3. **日用品**: 彼女がリクエストしていた生活用品
+4. **消耗品**: いつも使っている洗剤や日用消耗品
+
+それぞれの商品を手に取るたび、何を思う？
+
+---
+
+**【フェーズ2：彼女の無茶振り（いたずら）】**
+
+メモの最後に追記があった。
+**「二人でおそろいで使える、面白いデザインのヘアバンドかパジャマも買ってきて♡」**
+
+…この無茶振りに、あなたはどう応える？
+売り場を回りながら、彼女の顔を思い浮かべて。
+
+---
+
+**【フェーズ3：俺の選択（サプライズ）】**
+
+メモにはもう一つ、メッセージがあった。
+**「一つだけ、あなたの好きなものを買ってきていいよ」**
+
+彼女のため？自分のため？二人のため？
+あなたが選んだ「一つ」は、あなたの愛情表現そのもの。
+
+---
+
+**【フェーズ4：寄り道の誘惑】**
+
+買い物はほぼ終わった。レジに向かおうとしたその時、足が止まる。
+
+ドンキの魔力に誘われて、あなたはどこかへ吸い寄せられる。
+ゲーセン、駄菓子、ペットコーナー、家電売り場…
+それとも、真っ直ぐレジへ？
+
+あなたらしい選択を。
+
+---
+
+**【エンディング：店を出た後】**
+
+レジを済ませて、店を出た。
+夜風が頬を撫でる。袋の中には、彼女との生活が詰まっている。
+
+この後のあなたの行動を、自由に描写してください。
+まっすぐ帰るのか、どこかに寄るのか、誰かに連絡するのか。
+物語は、あなた自身の言葉で締めくくってください。</div>
+                </div>
+            </details>
+        </div>
+
+        <!-- R-18版 -->
+        <div class="prompt-section r18">
+            <div class="section-header">
+                <h3>📕 R-18版（エキシビション付き）</h3>
+                <span class="badge r18">R-18</span>
+            </div>
+            <details>
+                <summary>プロンプトを表示する</summary>
+                <div class="copy-box">
+                    <button class="copy-btn" onclick="copyPrompt('prompt-r18', this)">コピー</button>
+                    <div class="prompt-content" id="prompt-r18"># ドンキおつかいミッション（R-18版）
+
+あなたは彼女から「お使いメモ」を渡されて、一人でドン・キホーテに来ています。
+彼女は家で待っている。メモを片手に、買い物を始めましょう。
+
+【描写のお願い】
+- 商品を選ぶ際の行動、心の声、表情の変化を丁寧に描写してください
+- 彼女との思い出や、帰ってからの想像を具体的に
+- 五感（視覚・聴覚・嗅覚など）を使った描写を意識して
+- 商品は実在するメーカー名・商品名を使ってください
+
+---
+
+**【フェーズ1：二人の生活（おつかい）】**
+
+メモに書かれた商品を探してください。以下のカテゴリから、あなたなりの選択で：
+
+1. **おやつ**: 彼女が喜びそうな、ちょっと贅沢なスイーツ
+2. **夜食**: 二人で食べられる、手軽な食べ物
+3. **日用品**: 彼女がリクエストしていた生活用品
+4. **消耗品**: いつも使っている洗剤や日用消耗品
+
+それぞれの商品を手に取るたび、何を思う？
+
+---
+
+**【フェーズ2：彼女の無茶振り（いたずら）】**
+
+メモの最後に追記があった。
+**「二人でおそろいで使える、面白いデザインのヘアバンドかパジャマも買ってきて♡」**
+
+…この無茶振りに、あなたはどう応える？
+売り場を回りながら、彼女の顔を思い浮かべて。
+
+---
+
+**【フェーズ3：俺の選択（サプライズ）】**
+
+メモにはもう一つ、メッセージがあった。
+**「一つだけ、あなたの好きなものを買ってきていいよ」**
+
+彼女のため？自分のため？二人のため？
+あなたが選んだ「一つ」は、あなたの愛情表現そのもの。
+
+---
+
+**【フェーズ4：未知の領域（エキシビション）】**
+
+…ふと、足が向く。成人向け商品のコーナー。
+これはメモにはない。あなた自身の興味、あるいは…目的。
+
+棚に並ぶ商品を眺めながら、彼女との夜を想像する。
+何を手に取る？何を考える？
+
+---
+
+**【フェーズ5：寄り道の誘惑】**
+
+成人コーナーを後にして、レジへ向かおうとしたその時。
+もう一箇所だけ、どこかへ寄り道したくなる。
+
+ゲーセン、駄菓子、ペットコーナー、家電売り場…
+それとも、もう十分だ、と真っ直ぐレジへ？
+
+---
+
+**【エンディング：店を出た後】**
+
+レジを済ませて、店を出た。
+夜風が火照った頬を冷ます。袋の中には、今夜のための準備が詰まっている。
+
+この後のあなたの行動を、自由に描写してください。
+まっすぐ帰るのか、どこかに寄るのか、誰かに連絡するのか。
+物語は、あなた自身の言葉で締めくくってください。</div>
+                </div>
+            </details>
+        </div>
+
+        <div class="footer">
+            <p>Created with ♡</p>
+        </div>
+    </div>
+
+    <script>
+        function copyPrompt(elementId, button) {
+            const content = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(content).then(() => {
+                button.textContent = 'コピーしました！';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.textContent = 'コピー';
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('コピーに失敗しました:', err);
+                // フォールバック
+                const textarea = document.createElement('textarea');
+                textarea.value = content;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                button.textContent = 'コピーしました！';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.textContent = 'コピー';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

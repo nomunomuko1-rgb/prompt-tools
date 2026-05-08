@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 シチュエーション・ランダマイザー</title>
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #252540;
+            --accent-primary: #ff6b9d;
+            --accent-secondary: #c44569;
+            --accent-glow: rgba(255, 107, 157, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --border-color: #3a3a5c;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --spicy: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--accent-primary), #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        /* Toggle Section */
+        .toggle-section {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-card);
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .toggle-item.spicy {
+            border-color: var(--spicy);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-secondary);
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.toggle-slider {
+            background-color: var(--spicy);
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Who Selection */
+        .who-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .who-section label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: var(--accent-primary);
+        }
+
+        .who-select {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 1rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .who-select:hover,
+        .who-select:focus {
+            border-color: var(--accent-primary);
+            outline: none;
+        }
+
+        /* Slots Grid */
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .slot-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .slot-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px var(--accent-glow);
+        }
+
+        .slot-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .slot-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            word-break: break-word;
+        }
+
+        .slot-value.spinning {
+            animation: spin 0.1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .lock-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+
+        .lock-btn:hover {
+            background: var(--border-color);
+        }
+
+        .lock-btn.locked {
+            background: var(--warning);
+            color: #000;
+        }
+
+        /* Generate Button */
+        .generate-btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 25px;
+        }
+
+        .generate-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 40px var(--accent-glow);
+        }
+
+        .generate-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Result Section */
+        .result-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .result-section h3 {
+            color: var(--accent-primary);
+            margin-bottom: 15px;
+        }
+
+        .result-output {
+            background: var(--bg-primary);
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            word-break: break-all;
+            white-space: pre-wrap;
+            min-height: 80px;
+            color: var(--success);
+        }
+
+        .copy-btn {
+            margin-top: 15px;
+            padding: 12px 30px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background: var(--success);
+            color: #000;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        .copy-btn.copied {
+            background: var(--accent-primary);
+        }
+
+        /* Profile Section (Collapsible) */
+        .profile-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .profile-header {
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+            transition: background 0.3s;
+        }
+
+        .profile-header:hover {
+            background: var(--border-color);
+        }
+
+        .profile-header h3 {
+            color: var(--accent-primary);
+            font-size: 1rem;
+        }
+
+        .profile-toggle-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+
+        .profile-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+
+        .profile-content.open {
+            max-height: 800px;
+        }
+
+        .profile-inner {
+            padding: 20px;
+        }
+
+        .profile-item {
+            margin-bottom: 15px;
+        }
+
+        .profile-item label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .profile-item textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 0.85rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            resize: vertical;
+            min-height: 60px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
+        .profile-item textarea:focus {
+            border-color: var(--accent-primary);
+            outline: none;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .profile-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: opacity 0.3s;
+        }
+
+        .save-profile-btn {
+            background: var(--success);
+            color: #000;
+        }
+
+        .clear-profile-btn {
+            background: var(--spicy);
+            color: white;
+        }
+
+        .profile-actions button:hover {
+            opacity: 0.85;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .slots-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .slot-value {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎰 シチュエーション・ランダマイザー</h1>
+        <p class="subtitle">画像生成のお題ガチャツール♡</p>
+
+        <!-- Spicy Mode Toggle -->
+        <div class="toggle-section">
+            <div class="toggle-item spicy">
+                <span>🔞 Spicy Mode</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="spicyToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Character Profile Section -->
+        <div class="profile-section">
+            <div class="profile-header" onclick="toggleProfile()">
+                <h3>📝 キャラプロファイル設定</h3>
+                <span class="profile-toggle-icon" id="profileIcon">▼</span>
+            </div>
+            <div class="profile-content" id="profileContent">
+                <div class="profile-inner">
+                    <div class="profile-item">
+                        <label>キャラA（例：女の子①）</label>
+                        <textarea id="profileA" placeholder="1girl, black_hair, long_hair, brown_eyes..."></textarea>
+                    </div>
+                    <div class="profile-item">
+                        <label>キャラB（例：女の子②）</label>
+                        <textarea id="profileB" placeholder="1girl, blonde_hair, short_hair, blue_eyes..."></textarea>
+                    </div>
+                    <div class="profile-item">
+                        <label>キャラC（例：男の子①）</label>
+                        <textarea id="profileC"
+                            placeholder="1boy, black_hair, short_hair, brown_eyes, tall..."></textarea>
+                    </div>
+                    <div class="profile-item">
+                        <label>キャラD（例：男の子②）</label>
+                        <textarea id="profileD" placeholder="1boy, silver_hair, long_hair, green_eyes..."></textarea>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="save-profile-btn" onclick="saveProfiles()">💾 保存</button>
+                        <button class="clear-profile-btn" onclick="clearProfiles()">🗑️ クリア</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Who Selection -->
+        <div class="who-section">
+            <label>👥 キャラ構成を選択</label>
+            <select class="who-select" id="whoSelect">
+                <option value="soloA">ソロ（キャラA）</option>
+                <option value="soloB">ソロ（キャラB）</option>
+                <option value="soloC">ソロ（キャラC）</option>
+                <option value="soloD">ソロ（キャラD）</option>
+                <option value="pairGL">ペア GL（キャラA × キャラB）</option>
+                <option value="pairBL">ペア BL（キャラC × キャラD）</option>
+                <option value="pairNL_AC">ペア NL（キャラA × キャラC）</option>
+                <option value="pairNL_BC">ペア NL（キャラB × キャラC）</option>
+                <option value="random">★ 完全ランダム</option>
+            </select>
+        </div>
+
+        <!-- Slots -->
+        <div class="slots-grid">
+            <div class="slot-card">
+                <div class="slot-label">📍 場所</div>
+                <div class="slot-value" id="slotLocation">---</div>
+                <button class="lock-btn" onclick="toggleLock('location')">🔓 LOCK</button>
+            </div>
+            <div class="slot-card">
+                <div class="slot-label">👗 服カテゴリ</div>
+                <div class="slot-value" id="slotCostumeCategory">---</div>
+                <button class="lock-btn" onclick="toggleLock('costumeCategory')">🔓 LOCK</button>
+            </div>
+            <div class="slot-card">
+                <div class="slot-label">👔 服ディテール</div>
+                <div class="slot-value" id="slotCostumeDetail">---</div>
+                <button class="lock-btn" onclick="toggleLock('costumeDetail')">🔓 LOCK</button>
+            </div>
+            <div class="slot-card">
+                <div class="slot-label">🎬 行動</div>
+                <div class="slot-value" id="slotAction">---</div>
+                <button class="lock-btn" onclick="toggleLock('action')">🔓 LOCK</button>
+            </div>
+            <div class="slot-card">
+                <div class="slot-label">📷 構図</div>
+                <div class="slot-value" id="slotComposition">---</div>
+                <button class="lock-btn" onclick="toggleLock('composition')">🔓 LOCK</button>
+            </div>
+            <div class="slot-card">
+                <div class="slot-label">💡 ライティング</div>
+                <div class="slot-value" id="slotLighting">---</div>
+                <button class="lock-btn" onclick="toggleLock('lighting')">🔓 LOCK</button>
+            </div>
+        </div>
+
+        <!-- Generate Button -->
+        <button class="generate-btn" onclick="generate()">⚡ 妄想する (GENERATE) ⚡</button>
+
+        <!-- Result -->
+        <div class="result-section">
+            <h3>📋 Result</h3>
+            <div class="result-output" id="resultOutput">ここに生成結果が表示されます...</div>
+            <button class="copy-btn" onclick="copyResult()">📋 Copy</button>
+        </div>
+    </div>
+
+    <script>
+        // データ定義
+        const data = {
+            locations: [
+                { ja: "教室", en: "classroom" },
+                { ja: "ベッドルーム", en: "bedroom" },
+                { ja: "カフェ", en: "cafe" },
+                { ja: "公園", en: "park" },
+                { ja: "ビーチ", en: "beach" },
+                { ja: "森", en: "forest" },
+                { ja: "街中", en: "city street" },
+                { ja: "屋上", en: "rooftop" },
+                { ja: "電車内", en: "train interior" },
+                { ja: "図書館", en: "library" },
+                { ja: "キッチン", en: "kitchen" },
+                { ja: "バスルーム", en: "bathroom" },
+                { ja: "オフィス", en: "office" },
+                { ja: "バー", en: "bar" },
+                { ja: "神社", en: "shrine" },
+                { ja: "遊園地", en: "amusement park" },
+                { ja: "プール", en: "pool" },
+                { ja: "夜景", en: "night cityscape" }
+            ],
+            locations_spicy: [
+                { ja: "ラブホテル", en: "love hotel room" },
+                { ja: "薄暗い路地裏", en: "dark alley" },
+                { ja: "ダンジョン", en: "dungeon" }
+            ],
+            costumeCategories: [
+                { ja: "カジュアル", en: "casual", key: "casual" },
+                { ja: "フォーマル", en: "formal", key: "formal" },
+                { ja: "制服", en: "uniform", key: "uniform" },
+                { ja: "水着", en: "swimwear", key: "swimwear" },
+                { ja: "ファンタジー", en: "fantasy", key: "fantasy" },
+                { ja: "スポーツ", en: "sportswear", key: "sports" }
+            ],
+            costumeCategories_spicy: [
+                { ja: "フェティッシュ🔞", en: "fetish", key: "fetish" }
+            ],
+            costumeDetails: {
+                casual: [
+                    { ja: "パーカー", en: "hoodie" },
+                    { ja: "Tシャツ", en: "t-shirt" },
+                    { ja: "ワンピース", en: "dress" },
+                    { ja: "カーディガン", en: "cardigan" },
+                    { ja: "ジーンズ", en: "jeans" },
+                    { ja: "オフショルダー", en: "off-shoulder top" }
+                ],
+                formal: [
+                    { ja: "スーツ", en: "suit" },
+                    { ja: "ドレス", en: "evening dress" },
+                    { ja: "タキシード", en: "tuxedo" },
+                    { ja: "着物", en: "kimono" },
+                    { ja: "チャイナドレス", en: "china dress" }
+                ],
+                uniform: [
+                    { ja: "学生服", en: "school uniform" },
+                    { ja: "メイド服", en: "maid outfit" },
+                    { ja: "ナース服", en: "nurse uniform" },
+                    { ja: "OL制服", en: "office lady uniform" },
+                    { ja: "軍服", en: "military uniform" },
+                    { ja: "警察官", en: "police uniform" }
+                ],
+                swimwear: [
+                    { ja: "ビキニ", en: "bikini" },
+                    { ja: "ワンピース水着", en: "one-piece swimsuit" },
+                    { ja: "競泳水着", en: "competition swimsuit" },
+                    { ja: "パレオ付き", en: "bikini with pareo" }
+                ],
+                fantasy: [
+                    { ja: "鎧", en: "armor" },
+                    { ja: "ローブ", en: "robe" },
+                    { ja: "巫女服", en: "miko outfit" },
+                    { ja: "ゴスロリ", en: "gothic lolita" },
+                    { ja: "サイバースーツ", en: "cyber suit" },
+                    { ja: "魔女", en: "witch costume" }
+                ],
+                sports: [
+                    { ja: "体操服", en: "gym uniform" },
+                    { ja: "テニスウェア", en: "tennis wear" },
+                    { ja: "ジャージ", en: "tracksuit" },
+                    { ja: "チアリーダー", en: "cheerleader outfit" }
+                ],
+                fetish: [
+                    { ja: "バニースーツ🔞", en: "bunny suit" },
+                    { ja: "ボンテージ🔞", en: "bondage outfit" },
+                    { ja: "裸エプロン🔞", en: "naked apron" },
+                    { ja: "シースルー🔞", en: "see-through lingerie" }
+                ]
+            },
+            actions_solo: [
+                { ja: "立ちポーズ", en: "standing" },
+                { ja: "座る", en: "sitting" },
+                { ja: "振り返る", en: "looking back" },
+                { ja: "寝そべる", en: "lying down" },
+                { ja: "ストレッチ", en: "stretching" },
+                { ja: "読書", en: "reading book" },
+                { ja: "スマホいじり", en: "holding phone" },
+                { ja: "食事中", en: "eating" },
+                { ja: "飲み物を持つ", en: "holding drink" },
+                { ja: "ポーズを取る", en: "posing" }
+            ],
+            actions_solo_spicy: [
+                { ja: "着替え中🔞", en: "changing clothes" },
+                { ja: "シャワー中🔞", en: "showering" },
+                { ja: "誘惑ポーズ🔞", en: "seductive pose" }
+            ],
+            actions_pair: [
+                { ja: "手繋ぎ", en: "holding hands" },
+                { ja: "ハグ", en: "hugging" },
+                { ja: "背中合わせ", en: "back to back" },
+                { ja: "頬寄せ", en: "cheek to cheek" },
+                { ja: "膝枕", en: "lap pillow" },
+                { ja: "おんぶ", en: "piggyback ride" },
+                { ja: "ダンス", en: "dancing" },
+                { ja: "乾杯", en: "toasting" },
+                { ja: "相合傘", en: "sharing umbrella" },
+                { ja: "腕組み", en: "arm in arm" }
+            ],
+            actions_pair_spicy: [
+                { ja: "キス🔞", en: "kissing" },
+                { ja: "ディープキス🔞", en: "deep kiss" },
+                { ja: "押し倒す🔞", en: "pushing down" },
+                { ja: "見つめ合い（赤面）", en: "eye contact, blushing" },
+                { ja: "耳元で囁く🔞", en: "whispering in ear" },
+                { ja: "首筋にキス🔞", en: "kissing neck" }
+            ],
+            compositions: [
+                { ja: "全身", en: "full body" },
+                { ja: "上半身", en: "upper body" },
+                { ja: "顔アップ", en: "close-up, face" },
+                { ja: "バストアップ", en: "portrait" },
+                { ja: "ローアングル", en: "from below" },
+                { ja: "俯瞰", en: "from above" },
+                { ja: "横顔", en: "profile" },
+                { ja: "後ろ姿", en: "from behind" },
+                { ja: "ダッチアングル", en: "dutch angle" }
+            ],
+            lightings: [
+                { ja: "自然光", en: "natural lighting" },
+                { ja: "逆光", en: "backlit, backlighting" },
+                { ja: "夕焼け", en: "sunset, golden hour" },
+                { ja: "夜・月明かり", en: "night, moonlight" },
+                { ja: "ネオン", en: "neon lights" },
+                { ja: "サイバーパンク", en: "cyberpunk lighting" },
+                { ja: "パステルカラー", en: "pastel colors, soft lighting" },
+                { ja: "ドラマチック", en: "dramatic lighting" },
+                { ja: "スタジオ照明", en: "studio lighting" },
+                { ja: "窓からの光", en: "window light" }
+            ]
+        };
+
+        // 状態管理
+        let locks = {
+            location: false,
+            costumeCategory: false,
+            costumeDetail: false,
+            action: false,
+            composition: false,
+            lighting: false
+        };
+
+        let currentValues = {
+            location: null,
+            costumeCategory: null,
+            costumeDetail: null,
+            action: null,
+            composition: null,
+            lighting: null
+        };
+
+        // Profile管理
+        function toggleProfile() {
+            const content = document.getElementById('profileContent');
+            const icon = document.getElementById('profileIcon');
+            content.classList.toggle('open');
+            icon.textContent = content.classList.contains('open') ? '▲' : '▼';
+        }
+
+        function saveProfiles() {
+            const profiles = {
+                A: document.getElementById('profileA').value,
+                B: document.getElementById('profileB').value,
+                C: document.getElementById('profileC').value,
+                D: document.getElementById('profileD').value
+            };
+            localStorage.setItem('situationRandomizerProfiles', JSON.stringify(profiles));
+            alert('💾 プロファイルを保存しました！');
+        }
+
+        function loadProfiles() {
+            const saved = localStorage.getItem('situationRandomizerProfiles');
+            if (saved) {
+                const profiles = JSON.parse(saved);
+                document.getElementById('profileA').value = profiles.A || '';
+                document.getElementById('profileB').value = profiles.B || '';
+                document.getElementById('profileC').value = profiles.C || '';
+                document.getElementById('profileD').value = profiles.D || '';
+            }
+        }
+
+        function clearProfiles() {
+            if (confirm('🗑️ プロファイルをクリアしますか？')) {
+                document.getElementById('profileA').value = '';
+                document.getElementById('profileB').value = '';
+                document.getElementById('profileC').value = '';
+                document.getElementById('profileD').value = '';
+                localStorage.removeItem('situationRandomizerProfiles');
+            }
+        }
+
+        // Lock機能
+        function toggleLock(slot) {
+            locks[slot] = !locks[slot];
+            const btn = document.querySelector(`[onclick="toggleLock('${slot}')"]`);
+            if (locks[slot]) {
+                btn.textContent = '🔒 LOCKED';
+                btn.classList.add('locked');
+            } else {
+                btn.textContent = '🔓 LOCK';
+                btn.classList.remove('locked');
+            }
+        }
+
+        // ランダム選択
+        function randomFrom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        // メイン生成関数
+        function generate() {
+            const spicy = document.getElementById('spicyToggle').checked;
+            const who = document.getElementById('whoSelect').value;
+            const isSolo = who.startsWith('solo');
+            const isPair = who.startsWith('pair');
+
+            // アニメーション
+            const slots = ['slotLocation', 'slotCostumeCategory', 'slotCostumeDetail',
+                'slotAction', 'slotComposition', 'slotLighting'];
+            slots.forEach(id => {
+                document.getElementById(id).classList.add('spinning');
+            });
+
+            setTimeout(() => {
+                // 場所
+                if (!locks.location) {
+                    let locations = [...data.locations];
+                    if (spicy) locations = locations.concat(data.locations_spicy);
+                    currentValues.location = randomFrom(locations);
+                }
+                document.getElementById('slotLocation').textContent = currentValues.location.ja;
+
+                // 服カテゴリ
+                if (!locks.costumeCategory) {
+                    let categories = [...data.costumeCategories];
+                    if (spicy) categories = categories.concat(data.costumeCategories_spicy);
+                    currentValues.costumeCategory = randomFrom(categories);
+                }
+                document.getElementById('slotCostumeCategory').textContent = currentValues.costumeCategory.ja;
+
+                // 服ディテール
+                if (!locks.costumeDetail) {
+                    const categoryKey = currentValues.costumeCategory.key;
+                    currentValues.costumeDetail = randomFrom(data.costumeDetails[categoryKey]);
+                }
+                document.getElementById('slotCostumeDetail').textContent = currentValues.costumeDetail.ja;
+
+                // 行動
+                if (!locks.action) {
+                    let actions;
+                    if (isSolo) {
+                        actions = [...data.actions_solo];
+                        if (spicy) actions = actions.concat(data.actions_solo_spicy);
+                    } else {
+                        actions = [...data.actions_pair];
+                        if (spicy) actions = actions.concat(data.actions_pair_spicy);
+                    }
+                    currentValues.action = randomFrom(actions);
+                }
+                document.getElementById('slotAction').textContent = currentValues.action.ja;
+
+                // 構図
+                if (!locks.composition) {
+                    currentValues.composition = randomFrom(data.compositions);
+                }
+                document.getElementById('slotComposition').textContent = currentValues.composition.ja;
+
+                // ライティング
+                if (!locks.lighting) {
+                    currentValues.lighting = randomFrom(data.lightings);
+                }
+                document.getElementById('slotLighting').textContent = currentValues.lighting.ja;
+
+                // アニメーション終了
+                slots.forEach(id => {
+                    document.getElementById(id).classList.remove('spinning');
+                });
+
+                // 結果生成
+                generateResult(who, isSolo, isPair);
+
+            }, 300);
+        }
+
+        function generateResult(who, isSolo, isPair) {
+            let characterPrompt = '';
+
+            // キャラプロファイル取得
+            const profileA = document.getElementById('profileA').value.trim();
+            const profileB = document.getElementById('profileB').value.trim();
+            const profileC = document.getElementById('profileC').value.trim();
+            const profileD = document.getElementById('profileD').value.trim();
+
+            // Who に応じたキャラプロンプト
+            switch (who) {
+                case 'soloA':
+                    characterPrompt = profileA || '1girl';
+                    break;
+                case 'soloB':
+                    characterPrompt = profileB || '1girl';
+                    break;
+                case 'soloC':
+                    characterPrompt = profileC || '1boy';
+                    break;
+                case 'soloD':
+                    characterPrompt = profileD || '1boy';
+                    break;
+                case 'pairGL':
+                    characterPrompt = `2girls, yuri, couple,\nBREAK\n${profileA || '(girl 1)'}\nBREAK\n${profileB || '(girl 2)'}`;
+                    break;
+                case 'pairBL':
+                    characterPrompt = `2boys, yaoi, couple,\nBREAK\n${profileC || '(boy 1)'}\nBREAK\n${profileD || '(boy 2)'}`;
+                    break;
+                case 'pairNL_AC':
+                    characterPrompt = `1boy 1girl, couple,\nBREAK\n${profileA || '(girl)'}\nBREAK\n${profileC || '(boy)'}`;
+                    break;
+                case 'pairNL_BC':
+                    characterPrompt = `1boy 1girl, couple,\nBREAK\n${profileB || '(girl)'}\nBREAK\n${profileC || '(boy)'}`;
+                    break;
+                case 'random':
+                    const randomWho = randomFrom(['soloA', 'soloB', 'soloC', 'soloD', 'pairGL', 'pairBL']);
+                    return generateResult(randomWho, randomWho.startsWith('solo'), randomWho.startsWith('pair'));
+            }
+
+            // シチュエーションプロンプト組み立て
+            const situationParts = [
+                currentValues.costumeDetail.en,
+                currentValues.action.en,
+                currentValues.location.en,
+                currentValues.composition.en,
+                currentValues.lighting.en
+            ];
+
+            const fullPrompt = `(best quality, masterpiece:1.2),\n${characterPrompt},\n${situationParts.join(', ')}`;
+
+            document.getElementById('resultOutput').textContent = fullPrompt;
+        }
+
+        function copyResult() {
+            const result = document.getElementById('resultOutput').textContent;
+            navigator.clipboard.writeText(result).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = '✅ Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '📋 Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // 初期化
+        window.onload = function () {
+            loadProfiles();
+        };
+    </script>
+</body>
+
+</html>

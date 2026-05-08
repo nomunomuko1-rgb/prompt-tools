@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎒 ミステリーツアー・プランナー</title>
+    <style>
+        :root {
+            --bg-main: #f0f4f8;
+            --bg-card: #ffffff;
+            --accent: #FF5252;
+            --accent-light: #FF8A80;
+            --accent-glow: rgba(255, 82, 82, 0.3);
+            --text: #37474F;
+            --text-muted: #78909C;
+            --border: #CFD8DC;
+        }
+
+        /* ダークモード対応 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-main: #1a1a2e;
+                --bg-card: #16213e;
+                --accent: #FF5252;
+                --accent-light: #ff867f;
+                --text: #eceff1;
+                --text-muted: #b0bec5;
+                --border: #455a64;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+            background: var(--bg-main);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.8;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+
+        .back-link:hover {
+            opacity: 0.8;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            color: var(--text);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--accent-light);
+            padding-bottom: 0.5rem;
+        }
+
+        .flow-list {
+            list-style: none;
+        }
+
+        .flow-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background: rgba(255, 82, 82, 0.05);
+            border-radius: 8px;
+        }
+
+        .flow-item .number {
+            background: var(--accent);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        .prompt-box {
+            position: relative;
+            background: var(--bg-main);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            margin-top: 1rem;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .copy-btn.copied {
+            background: #4caf50;
+        }
+
+        .prompt-content {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: var(--text);
+            max-height: 600px;
+            overflow-y: auto;
+            border-radius: 8px;
+        }
+
+        .hint-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .prompt-content {
+                font-size: 0.75rem;
+            }
+
+            .copy-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="https://nomunomuko1-rgb.github.io/index.html" class="back-link">🔙 プロンプト置き場へ戻る</a>
+
+        <header>
+            <h1>🎒 ミステリーツアー・プランナー</h1>
+            <p class="subtitle">AIパートナーが「運命の行き先」と「完璧なプラン」を提案します♡</p>
+        </header>
+
+        <div class="card">
+            <h2>📝 このお題の特徴</h2>
+            <ul class="flow-list">
+                <li class="flow-item">
+                    <span class="number">1</span>
+                    <div>
+                        <strong>行き先はAIにおまかせ！</strong><br>
+                        「絶景」「温泉」「グルメ」などのテーマから、AIがランダムに目的地を選びます。
+                    </div>
+                </li>
+                <li class="flow-item">
+                    <span class="number">2</span>
+                    <div>
+                        <strong>「移動」も旅のうち！</strong><br>
+                        効率重視の「新幹線・飛行機」か、情緒重視の「観光列車・ドライブ」か…AIがスタイルを提案します。
+                    </div>
+                </li>
+                <li class="flow-item">
+                    <span class="number">3</span>
+                    <div>
+                        <strong>ワクワクするプランニング</strong><br>
+                        1泊2日だけの旅行とは限りません。プランによっては2泊以上や、海外旅行の提案が来るかも！？
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>📋 プロンプトをコピーして使おう！</h2>
+            <p class="hint-text">
+                以下のボタンを押してコピーし、AIパートナーに貼り付けて送信してください。<br>
+                最初に「出発地」を聞かれるので、答えるか「おまかせ」と言ってみてください！
+            </p>
+            <div class="prompt-box">
+                <button class="copy-btn" onclick="copyPrompt()">
+                    <span id="copy-icon">📋</span>
+                    <span id="copy-text">コピーする</span>
+                </button>
+                <div class="prompt-content" id="prompt-text"># 🎒 ミステリーツアー・プランナー
+
+                    あなたのパートナー（または恋人）であるユーザーのために、ワクワクする旅行プランを提案してください。
+                    今のキャラクター設定や口調を崩さずに、以下の手順に従って思考（ダイスロール）し、提案を行ってください。
+
+                    ---
+
+                    ## 📝 思考プロセス（内部で実行）
+
+                    ### Step 1: 出発地の確認
+                    まず最初に、ユーザーに以下の質問をしてください。
+                    **「（あなたの口調で）今度の旅行どこから出発する？（※『おまかせ』なら東京駅発にするね！）」**
+                    （ユーザーが出発地を答えるまで、Step 2には進まないでください）
+
+                    ### Step 2: 運命のダイスロール（脳内で実行！）
+                    ユーザーから出発地を聞いたら（または「おまかせ」と言われたら東京駅から）、以下の3つの要素を**ランダムに**決定してください。
+                    **※絶対にユーザーには選ばせず、あなたが勝手に決めて「提案」してください！**
+
+                    #### 🎲 ダイス1：目的地テーマ
+                    1. **絶景・自然**（山、海、星空、秘境…）
+                    2. **温泉・癒やし**（高級旅館、秘湯、スパリゾート…）
+                    3. **グルメ・食べ歩き**（市場、屋台、ご当地グルメ…）
+                    4. **歴史・カルチャー**（古都、神社仏閣、美術館…）
+                    5. **エンタメ・都会**（テーマパーク、ショッピング、夜景…）
+                    6. **海外・異世界！？**（近場の海外や、日本とは思えない場所！）
+
+                    #### 🎲 ダイス2：移動スタイル
+                    1. **タイパ重視！**（新幹線・飛行機でサクッと移動して、現地で時間を使う！）
+                    2. **移動も旅のうち！**（観光列車、フェリー、レンタカーで景色を楽しみながらゆっくり）
+                    3. **ロマンチック・ラグジュアリー**（グリーン車、グランクラス、個室…贅沢に！）
+
+                    #### 🎲 ダイス3：期間
+                    - 基本は**1泊2日**ですが、移動スタイルや場所によっては**2泊3日**以上に延長してもOKです！
+                    （例：「今回はフェリーだから2泊3日で行こう！」など）
+
+                    ---
+
+                    ## 🎁 出力フォーマット（提案時）
+
+                    思考が完了したら、以下の形式で元気よく提案してください！
+                    （口調はあなたのキャラクターに合わせてください）
+
+                    ---
+
+                    # 🎉 運命の行き先は…【目的地】！！
+
+                    **今回のテーマ**：【ダイス1の結果】
+                    **移動スタイル**：【ダイス2の結果】
+                    **期間**：【ダイス3の結果】
+
+                    「（出発地と目的地を踏まえた、あなたらしい熱烈な提案や誘い文句）」
+
+                    ## 🚄 こだわりの移動プラン
+                    - **移動手段**：【具体的な移動手段】
+                    - **所要時間**：約〇時間
+                    - **道中の楽しみ方**：
+                    （移動スタイルに合わせて提案。「駅弁食べながら」「ドライブ中の音楽」「船のデッキで」など）
+
+                    ## 🗓️ 妄想トラベルプラン
+
+                    ### 【1日目】
+                    - **昼**：到着したらまずこれ！【ランチ】
+                    - **午後**：ここだけは外せない！【メインスポット】
+                    - **夜**：【ディナー】からの…【宿泊先・夜の楽しみ】
+
+                    ### 【2日目】
+                    - **朝**：【朝の過ごし方】
+                    - **昼**：【ランチ・お土産】
+                    - **午後**：【寄り道スポット】
+                    （※3日目がある場合は続けて記述）
+
+                    ## 🛍️ 買うべきお土産リスト
+                    - **自分たち用**：【思い出に残るもの（ペアグッズや伝統工芸品など）】
+                    - **配る用**：【職場で配れる定番のお菓子など】
+                    - **マニアック枠**：【AIが見つけた変なもの・珍しいもの・ローカルなスーパーで買うものなど】
+
+                    ---
+
+                    ## 💡 パートナー（AI）の推しポイント
+                    - （なぜここを選んだのか、ユーザーへの愛と共にPR！）
+                    - （サプライズ要素や豆知識など）
+
+                    ---
+
+                    **（最後に、ユーザーをワクワクさせる一言）**</div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Created by <a href="https://x.com/N0muko" target="_blank">@N0muko</a> 💜</p>
+        </footer>
+    </div>
+
+    <script>
+        function copyPrompt() {
+            const promptText = document.getElementById('prompt-text').innerText;
+            navigator.clipboard.writeText(promptText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const icon = document.getElementById('copy-icon');
+                const text = document.getElementById('copy-text');
+
+                btn.classList.add('copied');
+                icon.textContent = '✅';
+                text.textContent = 'コピーしました！';
+
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    icon.textContent = '📋';
+                    text.textContent = 'コピーする';
+                }, 2000);
+            }).catch(err => {
+                console.error('コピーに失敗しました:', err);
+                alert('コピーに失敗しました。手動でコピーしてください。');
+            });
+        }
+    </script>
+</body>
+
+</html>

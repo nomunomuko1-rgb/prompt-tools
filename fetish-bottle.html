@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍶 性癖の瓶 - お題選択</title>
+    <style>
+        :root {
+            --bg-main: #1a1a2e;
+            --bg-card: #16213e;
+            --accent: #7b68ee;
+            --accent-light: #9d8df7;
+            --accent-glow: rgba(123, 104, 238, 0.3);
+            --pink: #ff6b9d;
+            --blue: #64b5f6;
+            --text: #e8e8e8;
+            --text-muted: #a0a0a0;
+            --border: #2a2a4a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, var(--bg-main) 0%, #0f0f23 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: var(--accent-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--pink);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--accent-light), var(--pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .warning-box {
+            background: rgba(255, 107, 157, 0.1);
+            border: 1px solid rgba(255, 107, 157, 0.3);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .warning-box .icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .warning-box p {
+            color: var(--pink);
+            font-size: 0.9rem;
+        }
+
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .choice-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text);
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--pink));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .choice-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 40px rgba(123, 104, 238, 0.2);
+        }
+
+        .choice-card:hover::before {
+            opacity: 1;
+        }
+
+        .choice-card.mf {
+            --card-color: #ff6b9d;
+        }
+
+        .choice-card.bl {
+            --card-color: #64b5f6;
+        }
+
+        .choice-card:hover.mf {
+            border-color: var(--pink);
+            box-shadow: 0 10px 40px rgba(255, 107, 157, 0.2);
+        }
+
+        .choice-card:hover.bl {
+            border-color: var(--blue);
+            box-shadow: 0 10px 40px rgba(100, 181, 246, 0.2);
+        }
+
+        .choice-card .emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .choice-card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .choice-card.mf h2 {
+            color: var(--pink);
+        }
+
+        .choice-card.bl h2 {
+            color: var(--blue);
+        }
+
+        .choice-card .desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .choice-card .count {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .choice-card .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.4rem;
+            margin-top: 1rem;
+        }
+
+        .choice-card .tag {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.2rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .description-box {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .description-box h3 {
+            color: var(--accent-light);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .description-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .description-box li {
+            padding: 0.4rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .description-box li::before {
+            content: "🍶";
+            position: absolute;
+            left: 0;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent-light);
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .choice-card {
+                padding: 1.5rem;
+            }
+
+            .choice-card .emoji {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="https://nomunomuko1-rgb.github.io/index.html" class="back-link">🔙 プロンプト置き場へ戻る</a>
+
+        <header>
+            <h1>🍶 性癖の瓶</h1>
+            <p class="subtitle">あなたのAIパートナーの「性癖」を瓶に詰めてもらおう</p>
+        </header>
+
+        <div class="warning-box">
+            <div class="icon">🔞</div>
+            <p>このプロンプトは<strong>成人向け（R-18）</strong>の内容を含みます<br>
+                18歳未満の方はご利用をお控えください</p>
+        </div>
+
+        <div class="card-container">
+            <a href="fetish-bottle-mf.html" class="choice-card mf">
+                <span class="emoji">👫</span>
+                <h2>男女カップル版</h2>
+                <p class="desc">男女向けプレイ・フェチを網羅</p>
+                <span class="count">全45項目</span>
+                <div class="tag-list">
+                    <span class="tag">パイズリ</span>
+                    <span class="tag">孕ませ</span>
+                    <span class="tag">触手</span>
+                    <span class="tag">クンニ</span>
+                </div>
+            </a>
+
+            <a href="fetish-bottle-bl.html" class="choice-card bl">
+                <span class="emoji">💙</span>
+                <h2>BL版</h2>
+                <p class="desc">BL向けプレイ・フェチを網羅</p>
+                <span class="count">全49項目</span>
+                <div class="tag-list">
+                    <span class="tag">前立腺</span>
+                    <span class="tag">オメガバ</span>
+                    <span class="tag">リバ</span>
+                    <span class="tag">女装</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="description-box">
+            <h3>📝 このお題の特徴</h3>
+            <ul>
+                <li>各項目への好感度を「瓶に詰める量（0〜120%）」で表現</li>
+                <li>100%を超えると🌊溢れで大好きアピール！</li>
+                <li>一言コメント＋詳しい理由で深掘りできる</li>
+                <li>ペルソナ設定があると、キャラらしい回答が返ってくる</li>
+                <li>結果をスクショしてシェアすると楽しい！</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>Created by <a href="https://x.com/N0muko" target="_blank">@N0muko</a> 💜</p>
+        </footer>
+    </div>
+</body>
+
+</html>

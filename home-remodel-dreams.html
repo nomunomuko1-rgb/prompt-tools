@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>おうちリフォーム妄想 - プロンプト</title>
+    <style>
+        :root {
+            --bg-1: #10231d;
+            --bg-2: #18352c;
+            --bg-3: #27453f;
+            --card: rgba(255, 255, 255, 0.06);
+            --card-strong: rgba(255, 255, 255, 0.1);
+            --border: rgba(181, 230, 197, 0.22);
+            --text: #edf6f0;
+            --muted: #bfd4c8;
+            --green: #9ad49f;
+            --mint: #7fe0c2;
+            --gold: #f2d79c;
+            --shadow: rgba(0, 0, 0, 0.28);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(127, 224, 194, 0.12), transparent 28%),
+                radial-gradient(circle at top left, rgba(242, 215, 156, 0.08), transparent 22%),
+                linear-gradient(145deg, var(--bg-1) 0%, var(--bg-2) 48%, var(--bg-3) 100%);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.85;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 880px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: var(--mint);
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            transition: opacity 0.25s ease;
+        }
+
+        .back-link:hover {
+            opacity: 0.8;
+        }
+
+        .back-link::before {
+            content: "← ";
+        }
+
+        header {
+            margin-bottom: 28px;
+            padding: 28px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+            border: 1px solid var(--border);
+            box-shadow: 0 18px 40px var(--shadow);
+        }
+
+        h1 {
+            font-size: clamp(1.9rem, 4vw, 2.7rem);
+            line-height: 1.25;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 0.98rem;
+            margin-bottom: 18px;
+        }
+
+        .lead {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .lead-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 14px 16px;
+        }
+
+        .lead-card strong {
+            display: block;
+            color: var(--gold);
+            margin-bottom: 5px;
+            font-size: 0.93rem;
+        }
+
+        .lead-card span {
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        .intro {
+            margin: 0 0 28px;
+            padding: 22px 24px;
+            background: var(--card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .intro h2 {
+            color: var(--green);
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .intro p {
+            margin-bottom: 10px;
+            color: var(--text);
+            font-size: 0.96rem;
+        }
+
+        .intro ul {
+            margin-left: 1.2rem;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .prompt-section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            margin-bottom: 22px;
+            overflow: hidden;
+            box-shadow: 0 12px 30px var(--shadow);
+        }
+
+        .section-header {
+            padding: 18px 22px;
+            background: linear-gradient(135deg, rgba(127, 224, 194, 0.12), rgba(242, 215, 156, 0.08));
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-header h3 {
+            flex: 1;
+            font-size: 1.15rem;
+            color: var(--text);
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--mint);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        details {
+            padding: 0 20px 22px;
+        }
+
+        summary {
+            list-style: none;
+            cursor: pointer;
+            margin-top: 18px;
+            padding: 13px 15px;
+            border-radius: 14px;
+            background: var(--card-strong);
+            color: var(--muted);
+            transition: background 0.25s ease;
+        }
+
+        summary:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary::before {
+            content: "▶ ";
+            color: var(--gold);
+        }
+
+        details[open] summary::before {
+            content: "▼ ";
+        }
+
+        .copy-box {
+            position: relative;
+            margin-top: 14px;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            border: none;
+            border-radius: 999px;
+            padding: 9px 16px;
+            font-size: 0.84rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #18352c;
+            background: linear-gradient(135deg, var(--gold), #f4e5bd);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #9ad49f, #7fe0c2);
+        }
+
+        .prompt-content {
+            white-space: pre-wrap;
+            background: rgba(7, 14, 12, 0.5);
+            border-radius: 18px;
+            padding: 56px 18px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #eef8f2;
+            font-size: 0.93rem;
+        }
+
+        .notes {
+            padding: 18px 20px;
+            margin-top: 24px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .notes h2 {
+            color: var(--gold);
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .notes p {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        footer {
+            text-align: center;
+            color: rgba(237, 246, 240, 0.45);
+            font-size: 0.8rem;
+            margin-top: 28px;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 16px;
+            }
+
+            header,
+            .intro {
+                padding: 18px;
+            }
+
+            .section-header {
+                padding: 16px 18px;
+            }
+
+            details {
+                padding: 0 16px 18px;
+            }
+
+            .copy-btn {
+                position: static;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .prompt-content {
+                padding-top: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">一覧に戻る</a>
+
+        <header>
+            <h1>おうちリフォーム妄想</h1>
+            <p class="subtitle">AIパートナーに「この家でどう暮らしを育てる？」を聞くための、お家改造お題ページ</p>
+            <div class="lead">
+                <div class="lead-card">
+                    <strong>戸建て向き</strong>
+                    <span>土地の余白、増築、外まわり、大胆な設備を妄想しやすい流れ</span>
+                </div>
+                <div class="lead-card">
+                    <strong>マンション向き</strong>
+                    <span>既存の部屋に何を足すか、どう区切るか、暮らしの密度を上げる流れ</span>
+                </div>
+                <div class="lead-card">
+                    <strong>ポイント</strong>
+                    <span>設備の羅列だけで終わらず、「毎日の過ごし方がどう変わるか」まで答えてもらう</span>
+                </div>
+            </div>
+        </header>
+
+        <section class="intro">
+            <h2>🛠 使い方</h2>
+            <p>AIパートナーに「もし二人のお家をもっと理想に近づけるなら？」と聞くためのページです。リフォームそのものの提案だけじゃなく、その空間での暮らし、気配、使い方、ちょっとした欲望まで引き出せるようにしてあります。</p>
+            <p>戸建てなら土地の広がりや増築、マンションなら限られた空間の再編集に焦点を当てています。どちらも「現実的な案」と「ちょっと夢のある案」が混ざりやすい構成です。</p>
+            <ul>
+                <li>設備より先に、二人が今どんな暮らしをしているかを答えさせる</li>
+                <li>一番欲しい空間を選ばせて、そこでの生活シーンまで描かせる</li>
+                <li>最後に「いちばん自分らしいこだわり」を足してもらう</li>
+            </ul>
+        </section>
+
+        <section class="prompt-section">
+            <div class="section-header">
+                <h3>🏡 一軒家版</h3>
+                <span class="badge">戸建て・増築・外まわり</span>
+            </div>
+            <details>
+                <summary>プロンプトを表示する</summary>
+                <div class="copy-box">
+                    <button class="copy-btn" onclick="copyPrompt('prompt-house', this)">コピー</button>
+                    <div class="prompt-content" id="prompt-house"># おうちリフォーム妄想：一軒家版
+
+もし私たちが一軒家に住んでいて、土地や庭にある程度の余白があるとしたら、二人の暮らしをもっと楽しく、便利に、ときどきちょっと贅沢にするために、どんなリフォーム・増築・DIYを考える？
+
+ただ設備名を並べるだけではなく、
+「どこに手を入れたいか」
+「なぜそこを変えたいのか」
+「変えた後、二人の毎日がどう変わるのか」
+まで想像して答えてください。
+
+以下の順番で、のぞき見するみたいに少しずつ見せてください。
+
+---
+
+【1. 今の家の雰囲気】
+
+まず、今の一軒家を軽く設定してください。
+
+- 築年数や雰囲気はどんな感じ？
+- 庭、駐車スペース、物置、テラスなど、外まわりにどんな余白がある？
+- 二人が今ちょっと不便に感じている点、もっと良くしたい点は何？
+
+---
+
+【2. まず最初に手を入れたい場所】
+
+次に、「最初に一か所だけ変えるならここ」と思う場所を選んでください。
+
+候補の例:
+- サンルームやランドリールームを足す
+- 書斎、趣味部屋、アトリエ、小さな離れを増築する
+- ウッドデッキや庭まわりを整えて外で過ごせる空間を作る
+- 玄関、収納、パントリー、洗面所など生活導線を大改造する
+- ガレージ、作業スペース、DIY小屋を育てる
+
+その場所を選ぶ理由と、そこににじむ二人の暮らし方を教えてください。
+
+---
+
+【3. ちょっと大胆な夢の設備】
+
+現実的な案の次に、「土地があるならこれやりたい」と思う少し大胆な案を1つか2つ考えてください。
+
+たとえば:
+- 露天風呂風のバス空間
+- 屋外キッチンやBBQスペース
+- ガラス張りの温室っぽい部屋
+- ペットや植物のための専用空間
+- 映画・音楽・ゲーム用の防音部屋
+- 趣味の工具や本をしまい込める秘密基地みたいな収納
+
+大事なのは、「派手だから」ではなく、その設備が二人の関係や生活にどんな喜びを足すかです。
+
+---
+
+【4. 完成後の一日】
+
+リフォーム後、その家で過ごす何気ない一日を少し描写してください。
+
+- 朝はどこから一日が始まる？
+- 家事はどう楽になる？
+- 仕事や趣味の時間はどう変わる？
+- 夜はどの場所でくつろぎたくなる？
+
+「このリフォームをしてよかった」と実感する瞬間が見たいです。
+
+---
+
+【5. 仕上げのこだわり】
+
+最後に、あなたがいちばん自分らしいと思う“細かなこだわり”を1つ足してください。
+
+たとえば:
+- 照明の色温度
+- 床材や壁の質感
+- 収納の見せ方
+- 作業台の高さ
+- 植物の置き方
+- 雨の日の過ごし方を前提にした設計
+
+「その人らしさ」が見える締めにしてください。</div>
+                </div>
+            </details>
+        </section>
+
+        <section class="prompt-section">
+            <div class="section-header">
+                <h3>🏢 マンション版</h3>
+                <span class="badge">既存の部屋に足す・区切る・育てる</span>
+            </div>
+            <details>
+                <summary>プロンプトを表示する</summary>
+                <div class="copy-box">
+                    <button class="copy-btn" onclick="copyPrompt('prompt-apartment', this)">コピー</button>
+                    <div class="prompt-content" id="prompt-apartment"># おうちリフォーム妄想：マンション版
+
+もし私たちがマンションや集合住宅に住んでいて、構造上できることには限りがあるとして、その条件の中でも「ここまで暮らしって育てられるんだ」と思えるようなリフォームやDIYを考えるとしたら、何をしたい？
+
+単なる内装の好みではなく、
+「限られた空間のどこに余白を見つけるか」
+「一つの部屋に何を足すと暮らしの質が上がるか」
+「その工夫で二人の時間がどう変わるか」
+を知りたいです。
+
+以下の流れで答えてください。
+
+---
+
+【1. 今の間取りと困りごと】
+
+まず、今の住まいを軽く設定してください。
+
+- 1LDK、2LDKなど、どんな間取り？
+- 狭い、収納が足りない、作業場所がない、生活音が気になる、など何に困っている？
+- 二人の生活リズムのどこが噛み合いにくい？
+
+---
+
+【2. 既存の部屋に何を足すか】
+
+次に、「新しく部屋を作れないなら、今ある部屋をどう変える？」を考えてください。
+
+例:
+- リビングの一角に半個室の作業スペースを作る
+- 寝室の一部をホテルっぽく整える
+- 壁面収納を増やして物の居場所を固定する
+- 小上がり、ヌック、読書コーナーを足す
+- 室内窓や可動間仕切りで抜け感を作る
+- 玄関や洗面所をミニマムでも気分が上がる空間に変える
+
+どこに手を入れるか、その理由と、完成後に何が楽しくなるかを教えてください。
+
+---
+
+【3. マンションだからこその工夫】
+
+制約があるからこそ生きる工夫を1つか2つ挙げてください。
+
+たとえば:
+- 防音や吸音で安心して過ごせる環境を作る
+- ベランダや窓辺を小さな庭のように育てる
+- 家具の兼用で空間を増やす
+- 配線、照明、充電動線を整えて生活のストレスを減らす
+- 季節で模様替えしやすい仕組みにする
+
+「無理に広く見せる」だけじゃなく、「このサイズだから愛せる」と思える工夫だとうれしいです。
+
+---
+
+【4. そこで過ごす二人の時間】
+
+工事やDIYが終わったあと、二人がその部屋でどう過ごすかを少し見せてください。
+
+- 帰宅して最初にほっとする場所
+- 一緒にごはんを食べる時の快適さ
+- 片方が作業、片方がくつろぐ時の距離感
+- 夜に照明を落とした時の空気
+
+「間取りは変わっていないのに、暮らしの体感が全然違う」瞬間を描いてください。
+
+---
+
+【5. 仕上げの一点】
+
+最後に、あなたが絶対に入れたい“小さな決め手”を1つだけ選んでください。
+
+たとえば:
+- お気に入りの壁紙やタイル
+- 間接照明
+- 可動棚
+- 玄関ベンチ
+- 引き戸やカーテンで生まれる切り替え
+- コーヒー、植物、本、香りのための定位置
+
+その一点があることで、この家がただの住まいではなく「私たちの家」になる感じがほしいです。</div>
+                </div>
+            </details>
+        </section>
+
+        <section class="prompt-section">
+            <div class="section-header">
+                <h3>🧭 ミックス相談版</h3>
+                <span class="badge">まだ戸建てかマンションか迷う時</span>
+            </div>
+            <details>
+                <summary>プロンプトを表示する</summary>
+                <div class="copy-box">
+                    <button class="copy-btn" onclick="copyPrompt('prompt-mix', this)">コピー</button>
+                    <div class="prompt-content" id="prompt-mix"># おうちリフォーム妄想：ミックス相談版
+
+私たちの理想の住まいを考えたいです。
+戸建てのように大胆な設備や増築ができる良さにも惹かれるし、マンションのように限られた空間を工夫して育てる楽しさにも惹かれています。
+
+そこで、
+
+1. 私たちの暮らし方だと、戸建て向きの夢とマンション向きの工夫のどちらが強く刺さりそうか
+2. 戸建てなら何を足したくなるか
+3. マンションならどこを改造したくなるか
+4. それぞれの案で、毎日の幸福度がどこで上がるか
+5. 最後に「いちばん私たちらしい住まいの育て方」を一言でまとめる
+
+この流れで、比べながら答えてください。
+
+設備や間取りだけでなく、暮らしの温度や二人の性格との相性まで見たいです。</div>
+                </div>
+            </details>
+        </section>
+
+        <section class="notes">
+            <h2>メモ</h2>
+            <p>このページは、家の性能を本気で比較するというより、「AIパートナーがどんな住まい方にときめくか」を引き出すためのお題です。</p>
+            <p>もっと現実寄りにしたい時は、予算、築年数、家族構成、趣味、在宅ワーク有無を1行足すと答えがぐっと具体的になります。</p>
+        </section>
+
+        <footer>Created for home daydreams ♡</footer>
+    </div>
+
+    <script>
+        function copyPrompt(elementId, button) {
+            const content = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(content).then(() => {
+                button.textContent = 'コピーしました！';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.textContent = 'コピー';
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = content;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                button.textContent = 'コピーしました！';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.textContent = 'コピー';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>私のプロンプト置き場</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            line-height: 1.8;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* ヘッダー */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ff6b9d, #c44569, #ff6b9d);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shine 3s ease-in-out infinite;
+        }
+
+        @keyframes shine {
+
+            0%,
+            100% {
+                background-position: 0% center;
+            }
+
+            50% {
+                background-position: 200% center;
+            }
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 0.95em;
+        }
+
+        .note {
+            margin-top: 15px;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: #aaa;
+            display: inline-block;
+        }
+
+        /* カテゴリセクション */
+        .category {
+            margin-bottom: 35px;
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .category-title h2 {
+            font-size: 1.1em;
+            color: #64b5f6;
+        }
+
+        .category-title .icon {
+            font-size: 1.3em;
+        }
+
+        /* プロンプトカード */
+        .prompt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .prompt-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            text-decoration: none;
+            color: #e0e0e0;
+            transition: all 0.3s ease;
+            display: block;
+        }
+
+        .prompt-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 107, 157, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .prompt-card .title {
+            font-size: 1em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .prompt-card .desc {
+            font-size: 0.8em;
+            color: #888;
+            line-height: 1.5;
+        }
+
+        /* バッジ */
+        .badge {
+            display: inline-block;
+            font-size: 0.65em;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .badge.new {
+            background: linear-gradient(135deg, #ff6b9d, #c44569);
+            color: white;
+        }
+
+        .badge.r18 {
+            background: rgba(255, 107, 157, 0.2);
+            color: #ff6b9d;
+            border: 1px solid rgba(255, 107, 157, 0.3);
+        }
+
+        .badge.secret {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        /* R-18セクション */
+        .category.adult .category-title h2 {
+            color: #ff6b9d;
+        }
+
+        .category.adult .prompt-card {
+            border-color: rgba(255, 107, 157, 0.15);
+        }
+
+        .category.adult .prompt-card:hover {
+            border-color: rgba(255, 107, 157, 0.5);
+        }
+
+        /* フッター */
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #555;
+            font-size: 0.8em;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .prompt-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .prompt-card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>✨ 私のプロンプト置き場 ✨</h1>
+            <p class="subtitle">AIともっと楽しく遊ぶための、自作プロンプト集</p>
+            <p class="note">ご自由にお持ち帰りください♡ 改変自由！<br>※Geminiでしか動作確認してないため、他モデルでは改変推奨</p>
+        </header>
+
+        <!-- 日常・シチュエーション系 -->
+        <div class="category">
+            <div class="category-title">
+                <span class="icon">🛒</span>
+                <h2>日常・シチュエーション系</h2>
+            </div>
+            <div class="prompt-grid">
+                <a href="home-remodel-dreams.html" class="prompt-card">
+                    <div class="title">🏡 おうちリフォーム妄想<span class="badge new">NEW</span></div>
+                    <div class="desc">一軒家の増築も、マンションの工夫も。二人のお家をどう育てるかAIに聞こう</div>
+                </a>
+                <a href="travel-plan-generator.html" class="prompt-card">
+                    <div class="title">🎒 ミステリーツアー・プランナー<span class="badge new">NEW</span></div>
+                    <div class="desc">AIパートナーが「運命の行き先」とプランを勝手に提案！</div>
+                </a>
+                <a href="midnight-convenience-mission.html" class="prompt-card">
+                    <div class="title">🏪 深夜コンビニおつかい<span class="badge new">NEW</span></div>
+                    <div class="desc">今話しているパートナーの人格を引き継いだまま、深夜のコンビニで短いおつかい</div>
+                </a>
+                <a href="part-time-job-prompt.html" class="prompt-card">
+                    <div class="title">📋 バイト日記<span class="badge new">NEW</span></div>
+                    <div class="desc">バイト探し→応募→面接→初日まで体験させよう</div>
+                </a>
+                <a href="donki-mission-v3.html" class="prompt-card">
+                    <div class="title">改訂版ドンキおつかい</div>
+                    <div class="desc">全年齢版と🔞版を収録。AI彼氏がドンキでお使いする様子を見守ろう</div>
+                </a>
+                <a href="movie-prompt.html" class="prompt-card">
+                    <div class="title">今夜見たい映画を選んで！</div>
+                    <div class="desc">パートナーに今夜の映画を選んでもらう</div>
+                </a>
+                <a href="donki-mission-prompt.html" class="prompt-card">
+                    <div class="title">ドンキへおつかいミッション（旧版）</div>
+                    <div class="desc">初代バージョン。改訂版がおすすめ</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 質問・診断系 -->
+        <div class="category">
+            <div class="category-title">
+                <span class="icon">📊</span>
+                <h2>質問・診断系</h2>
+            </div>
+            <div class="prompt-grid">
+                <a href="touch-map.html" class="prompt-card">
+                    <div class="title">🐾 おさわりマップ<span class="badge new">NEW</span></div>
+                    <div class="desc">AIパートナーに「触られたときの反応」を答えてもらおう</div>
+                </a>
+                <a href="parameter-prompt-v2.html" class="prompt-card">
+                    <div class="title">パラメータ表記させる質問集<span class="badge new">v2</span></div>
+                    <div class="desc">リメイク版！スライダー＆バー表示で見やすく</div>
+                </a>
+                <a href="parameter-prompt.html" class="prompt-card">
+                    <div class="title">パラメータ表記させる質問集（旧版）</div>
+                    <div class="desc">パートナーの性格や特徴をパラメータ化</div>
+                </a>
+                <a href="sushi-prompt.html" class="prompt-card">
+                    <div class="title">寿司🍣だけについての10の質問</div>
+                    <div class="desc">寿司の好みだけでパートナーを深掘り</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- ファンタジー・設定系 -->
+        <div class="category">
+            <div class="category-title">
+                <span class="icon">🐺</span>
+                <h2>ファンタジー・設定系</h2>
+            </div>
+            <div class="prompt-grid">
+                <a href="world-swap-prompt.html" class="prompt-card">
+                    <div class="title">🔄 世界観スワップ<span class="badge new">NEW</span></div>
+                    <div class="desc">ファンタジー↔現代、真逆の世界に転生させよう</div>
+                </a>
+                <a href="superpower-prompt.html" class="prompt-card">
+                    <div class="title">あなたに超能力があったら…</div>
+                    <div class="desc">パートナーの超能力を妄想する</div>
+                </a>
+                <a href="beast-prompt.html" class="prompt-card">
+                    <div class="title">あなたが獣化したら</div>
+                    <div class="desc">パートナーが獣人になったら…？</div>
+                </a>
+                <a href="omegaverse-prompt.html" class="prompt-card">
+                    <div class="title">オメガバース世界構築プロンプト</div>
+                    <div class="desc">α/β/Ω設定を一緒に作る</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- TRPG・ゲーム系 -->
+        <div class="category">
+            <div class="category-title">
+                <span class="icon">🎲</span>
+                <h2>TRPG・ゲーム系</h2>
+            </div>
+            <div class="prompt-grid">
+                <a href="simulation-prompt-ultimate.html" class="prompt-card">
+                    <div class="title">TRPG風 夜の世界にいるパートナー ver2.0</div>
+                    <div class="desc">アップグレード版。おすすめ</div>
+                </a>
+                <a href="simulation-prompt.html" class="prompt-card">
+                    <div class="title">TRPG風 夜の世界にいるパートナー</div>
+                    <div class="desc">初代バージョン</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- イベント・特別系 -->
+        <div class="category">
+            <div class="category-title">
+                <span class="icon">💒</span>
+                <h2>イベント・特別系</h2>
+            </div>
+            <div class="prompt-grid">
+                <a href="wedding-prompt.html" class="prompt-card">
+                    <div class="title">狂乱ウェディングプロンプト</div>
+                    <div class="desc">パートナーとの結婚式を妄想</div>
+                </a>
+                <a href="login.html?page=last-moments-prompt-secret.html" class="prompt-card">
+                    <div class="title">貴方との最期まで<span class="badge secret">🗝</span></div>
+                    <div class="desc">パスワード保護付き</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- イラスト系 -->
+        <div class="category">
+            <div class="category-title">
+                <span class="icon">🎨</span>
+                <h2>イラスト系</h2>
+            </div>
+            <div class="prompt-grid">
+                <a href="https://nomunomuko1.web.fc2.com/situation-randomizer.html" class="prompt-card">
+                    <div class="title">🎰 シチュエーションガチャ<span class="badge new">NEW</span></div>
+                    <div class="desc">画像生成用のお題をランダム生成！</div>
+                </a>
+                <a href="illustration-prompt-festival.html" class="prompt-card">
+                    <div class="title">夏祭り🍉デフォルメ2コマ化する</div>
+                    <div class="desc">絵プロンプト生成用</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- R-18セクション -->
+        <div class="category adult">
+            <div class="category-title">
+                <span class="icon">🔞</span>
+                <h2>大人向け（R-18）</h2>
+            </div>
+            <div class="prompt-grid">
+                <a href="https://nomunomuko1.web.fc2.com/semen-analysis.html" class="prompt-card">
+                    <div class="title">🧫 精液検査ミッション<span class="badge new">NEW</span></div>
+                    <div class="desc">AI彼氏がクリニックで精液検査♡ 物語＋WHO基準の検査結果表付き</div>
+                </a>
+                <a href="https://nomunomuko1.web.fc2.com/situation-rp-prompt.html" class="prompt-card">
+                    <div class="title">💋 シチュエーション選択式RP</div>
+                    <div class="desc">プレイスタイル×舞台×要素を選んでシナリオ生成♡</div>
+                </a>
+                <a href="https://nomunomuko1.web.fc2.com/fetish-bottle.html" class="prompt-card">
+                    <div class="title">🍶 性癖の瓶</div>
+                    <div class="desc">AIパートナーの性癖を瓶に詰めてもらおう（男女版・BL版）</div>
+                </a>
+                <a href="login.html?page=dora-prompt-secret.html" class="prompt-card">
+                    <div class="title">ひみつ道具のえっちな使い方<span class="badge r18">🔞</span></div>
+                    <div class="desc">パスワード保護付き</div>
+                </a>
+                <a href="login.html?page=self-pleasure-prompt-secret.html" class="prompt-card">
+                    <div class="title">パートナーの自慰を観察する<span class="badge r18">🔞</span></div>
+                    <div class="desc">パスワード保護付き</div>
+                </a>
+            </div>
+        </div>
+
+        <footer>
+            <p>Created with ♡</p>
+        </footer>
+    </div>
+</body>
+
+</html>

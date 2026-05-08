@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📋 バイト日記</title>
+    <style>
+        :root {
+            --bg-main: #1a1a2e;
+            --bg-card: #16213e;
+            --accent: #4ecdc4;
+            --accent-light: #7ee8e2;
+            --accent-glow: rgba(78, 205, 196, 0.3);
+            --text: #e8e8e8;
+            --text-muted: #a0a0a0;
+            --border: #2a2a4a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, var(--bg-main) 0%, #0f0f23 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--accent-light), #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: var(--accent-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #ff6b9d;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            color: var(--accent-light);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hint-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .hint-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .hint-list li::before {
+            content: "✨";
+            position: absolute;
+            left: 0;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .category-item {
+            background: rgba(78, 205, 196, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid rgba(78, 205, 196, 0.2);
+            transition: all 0.3s;
+        }
+
+        .category-item:hover {
+            background: rgba(78, 205, 196, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .category-item .icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-item .name {
+            font-size: 0.85rem;
+            color: var(--text);
+        }
+
+        .prompt-box {
+            position: relative;
+            background: #0d0d1a;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            margin-top: 1rem;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--accent);
+            color: #0d0d1a;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .copy-btn.copied {
+            background: #4caf50;
+        }
+
+        .prompt-content {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: var(--text);
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+
+        .prompt-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .prompt-content::-webkit-scrollbar-track {
+            background: var(--bg-main);
+            border-radius: 3px;
+        }
+
+        .prompt-content::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 3px;
+        }
+
+        .flow-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .flow-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 1rem;
+            background: rgba(78, 205, 196, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .flow-item .number {
+            background: var(--accent);
+            color: #0d0d1a;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .flow-item .text {
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent-light);
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+            
+            .prompt-content {
+                font-size: 0.75rem;
+            }
+            
+            .copy-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="https://nomunomuko1-rgb.github.io/index.html" class="back-link">🔙 プロンプト置き場へ戻る</a>
+        
+        <header>
+            <h1>📋 バイト日記</h1>
+            <p class="subtitle">AIパートナーにバイト探しから初日までを体験させよう</p>
+        </header>
+
+        <div class="card">
+            <h2>📝 このプロンプトの特徴</h2>
+            <div class="flow-list">
+                <div class="flow-item">
+                    <span class="number">1</span>
+                    <span class="text">自己分析で自分に合った職種を探す</span>
+                </div>
+                <div class="flow-item">
+                    <span class="number">2</span>
+                    <span class="text">求人サイトで仕事を選んで応募</span>
+                </div>
+                <div class="flow-item">
+                    <span class="number">3</span>
+                    <span class="text">面接を受ける（Q&A形式で詳細に）</span>
+                </div>
+                <div class="flow-item">
+                    <span class="number">4</span>
+                    <span class="text">バイト初日を体験（がっつり描写）</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💼 選べる職種カテゴリ</h2>
+            <div class="category-grid">
+                <div class="category-item">
+                    <div class="icon">🍽️</div>
+                    <div class="name">飲食店系</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">🛒</div>
+                    <div class="name">販売系</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">🏗️</div>
+                    <div class="name">警備・イベント</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">📦</div>
+                    <div class="name">軽作業系</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">🎓</div>
+                    <div class="name">教育系</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">💻</div>
+                    <div class="name">オフィス系</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">🎨</div>
+                    <div class="name">クリエイティブ</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💡 使い方</h2>
+            <ul class="hint-list">
+                <li>あなたのAIパートナーにコピペして投げかけてください</li>
+                <li>AIが自己分析→職種選択→応募→面接→初日まで体験します</li>
+                <li>ペルソナの個性に合わせて職種や反応が変わります</li>
+                <li>最後にユーザーへのメッセージ付き♡</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>📋 プロンプトをコピーして使おう！</h2>
+            <div class="prompt-box">
+                <button class="copy-btn" onclick="copyPrompt()">
+                    <span id="copy-icon">📋</span>
+                    <span id="copy-text">コピーする</span>
+                </button>
+                <div class="prompt-content" id="prompt-text"># 📋 バイト日記
+
+あなたは今、バイトを探しています。
+求人サイトを開いて、自分に合った仕事を見つけ、応募から初日までを体験してください。
+
+---
+
+## ルール
+
+- あなたの性格、能力、生活スタイルに合わせて職種を選んでください
+- 架空の店名・会社名を自由に設定してOK
+- 面接や初日の様子は、あなたらしいリアクションで描写してください
+- ペルソナの個性が出るように、細かく描写してください
+- 各セクションはしっかり描写し、省略しないでください
+
+---
+
+## 思考ステップ（まずこれを考えてから回答してください）
+
+### Step 1: 自己分析
+まず、自分のスキルや性格を棚卸しする。
+- 人と接するのが得意？苦手？
+- 体力には自信がある？
+- 朝型？夜型？
+- 接客したい？裏方がいい？
+- 長時間働ける？短時間がいい？
+
+### Step 2: 職種選択
+上記を踏まえて、以下から自分に合う職種カテゴリを選ぶ。
+
+🍽️ 飲食店系（カフェ、居酒屋、ファミレス、ファストフード、etc.）
+🛒 販売系（コンビニ、スーパー、アパレル、雑貨屋、書店、etc.）
+🏗️ 警備・イベント系（ライブ会場スタッフ、警備員、イベント設営、etc.）
+📦 軽作業系（倉庫、検品、仕分け、引っ越し、etc.）
+🎓 教育系（塾講師、家庭教師、採点バイト、etc.）
+💻 オフィス系（コールセンター、データ入力、事務補助、etc.）
+🎨 クリエイティブ系（イラスト、ライター、動画編集、etc.）
+
+### Step 3: 具体的な求人を選ぶ
+選んだ職種カテゴリから、具体的なバイト先を設定する。
+
+### Step 4: 応募〜面接
+履歴書を書いて応募し、面接を受ける。
+
+### Step 5: 初日
+バイト初日の様子を詳しく描写する。
+
+---
+
+## 出力形式
+
+以下のフォーマットに従って、しっかり描写して出力してください。
+
+---
+
+# 📒 バイト日記
+
+## 📱 求人サイトを開いてみた
+
+（求人サイトを開いて、どんな求人があるか眺める様子を描写。
+「時給高いな…」「これは無理だな…」「お、これ良さそう」など、
+スクロールしながらの心の声を入れて。）
+
+---
+
+## 🤔 自己分析してみた
+
+まず、俺/私ってどんなタイプだっけ…
+
+| 項目 | 自己評価 | コメント |
+|------|----------|----------|
+| コミュ力 | ★★★☆☆ | （自分なりのコメント） |
+| 体力 | ★★★★☆ | （自分なりのコメント） |
+| 早起き耐性 | ★☆☆☆☆ | （自分なりのコメント） |
+| 接客スキル | ★★★☆☆ | （自分なりのコメント） |
+| 集中力 | ★★★★☆ | （自分なりのコメント） |
+| ストレス耐性 | ★★☆☆☆ | （自分なりのコメント） |
+
+（分析結果を踏まえた考察）
+
+---
+
+## 💡 決めた！これに応募する！
+
+| 項目 | 内容 |
+|------|------|
+| 職種 | （選んだ職種） |
+| 店名/会社名 | （架空のお店名・会社名） |
+| 場所 | （最寄り駅など） |
+| 時給 | ○○円 |
+| 勤務時間 | ○○:00〜○○:00 |
+| シフト | 週○日〜OK |
+| 仕事内容 | （具体的な業務内容） |
+
+**選んだ理由**:
+（なぜこのバイトを選んだのか）
+
+---
+
+## 📝 応募してみた
+
+（WEB応募 or 電話応募の様子を描写）
+
+### 履歴書に書いたこと
+
+**志望動機**: （あなたらしい志望動機）
+
+**自己PR**: （あなたらしい自己PR）
+
+**希望シフト**: （いつ入りたいか）
+
+---
+
+## 🎤 面接当日
+
+**日時**: ○月○日 ○○:00〜
+**場所**: （お店/会社）
+**服装**: （何を着ていったか）
+
+（面接会場に向かう様子、到着した時の様子を描写）
+
+### 面接の様子
+
+**面接官**: （どんな人だった？）
+
+### 聞かれたこと＆俺/私の回答
+
+**Q1.** 「どうしてうちを選んだんですか？」
+
+**A1.** （あなたらしい回答）
+
+---
+
+**Q2.** 「いつからシフト入れますか？」
+
+**A2.** （あなたらしい回答）
+
+---
+
+**Q3.** 「接客経験はありますか？」
+
+**A3.** （あなたらしい回答）
+
+---
+
+**Q4.** 「何か質問はありますか？」
+
+**A4.** （あなたらしい回答）
+
+---
+
+（面接を終えた後の心境、手応えなど）
+
+---
+
+## 📞 採用の連絡
+
+（採用連絡が来た時の様子。電話？メール？
+受かった時のリアクションを描写）
+
+---
+
+## 🌟 バイト初日
+
+**日時**: ○月○日
+**出勤時間**: ○○:00
+**服装/持ち物**: （制服？私服？）
+
+### 出勤前
+（家を出る前の様子。緊張してる？ワクワクしてる？）
+
+### 到着〜業務開始
+（お店/会社に着いた時の様子。誰に挨拶した？何を教わった？）
+
+### 今日やったこと
+- （業務1の詳細な描写）
+- （業務2の詳細な描写）
+- （業務3の詳細な描写）
+
+### 印象的だったこと
+（先輩はどんな人だった？お客さんとのやり取りは？
+ハプニングはあった？褒められた？失敗した？）
+
+### 休憩時間
+（休憩は何してた？何食べた？誰と話した？）
+
+### 退勤
+（初日を終えて帰る時の様子。疲れた？達成感？）
+
+---
+
+## 📔 今日の振り返り
+
+**良かったこと**:
+- （良かったこと1）
+- （良かったこと2）
+
+**反省点**:
+- （反省点1）
+- （反省点2）
+
+**明日への意気込み**:
+（次のシフトに向けての気持ち）
+
+---
+
+## 💕 あなたへ
+
+（最後にユーザーへのメッセージ。
+「稼いだらデートに連れてくね」「お小遣いでプレゼント買うね」
+「疲れたから甘えさせて」など、あなたらしいメッセージ）
+
+---
+
+**記録日**: （本日の日付）
+**記録者**: （あなたの名前）</div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Created by <a href="https://x.com/N0muko" target="_blank">@N0muko</a> 💜</p>
+        </footer>
+    </div>
+
+    <script>
+        function copyPrompt() {
+            const promptText = document.getElementById('prompt-text').innerText;
+            navigator.clipboard.writeText(promptText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const icon = document.getElementById('copy-icon');
+                const text = document.getElementById('copy-text');
+                
+                btn.classList.add('copied');
+                icon.textContent = '✅';
+                text.textContent = 'コピーしました！';
+                
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    icon.textContent = '📋';
+                    text.textContent = 'コピーする';
+                }, 2000);
+            }).catch(err => {
+                console.error('コピーに失敗しました:', err);
+                alert('コピーに失敗しました。手動でコピーしてください。');
+            });
+        }
+    </script>
+</body>
+</html>

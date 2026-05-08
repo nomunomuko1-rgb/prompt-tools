@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>精液検査プロンプト</title>
+    <style>
+        :root {
+            --bg-main: #0f1923;
+            --bg-card: #162231;
+            --bg-dark: #0a1119;
+            --accent: #4fc3f7;
+            --accent-light: #81d4fa;
+            --accent-glow: rgba(79, 195, 247, 0.25);
+            --accent-warm: #ff6b9d;
+            --accent-warm-glow: rgba(255, 107, 157, 0.25);
+            --text: #e4ecf4;
+            --text-muted: #8a9bb0;
+            --border: #1e3347;
+            --success: #66bb6a;
+            --warning: #ffa726;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, var(--bg-main) 0%, #0a0f18 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: var(--accent-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--accent-warm);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--accent-light), var(--accent-warm));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            color: var(--accent-light);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hint-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .hint-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .hint-list li::before {
+            content: "🧪";
+            position: absolute;
+            left: 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .feature-item {
+            background: rgba(79, 195, 247, 0.08);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid rgba(79, 195, 247, 0.15);
+        }
+
+        .feature-item h3 {
+            font-size: 0.9rem;
+            color: var(--accent-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-item p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            background: rgba(255, 107, 157, 0.12);
+            color: var(--accent-warm);
+            padding: 0.2rem 0.7rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            border: 1px solid rgba(255, 107, 157, 0.2);
+        }
+
+        /* Version tabs */
+        .version-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 0;
+            border-radius: 12px 12px 0 0;
+            overflow: hidden;
+        }
+
+        .version-tab {
+            flex: 1;
+            padding: 0.8rem 1.2rem;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .version-tab.sfw {
+            background: rgba(79, 195, 247, 0.15);
+            color: var(--accent);
+        }
+
+        .version-tab.nsfw {
+            background: rgba(255, 107, 157, 0.15);
+            color: var(--accent-warm);
+        }
+
+        .version-tab.active.sfw {
+            background: rgba(79, 195, 247, 0.3);
+            box-shadow: inset 0 -3px 0 var(--accent);
+        }
+
+        .version-tab.active.nsfw {
+            background: rgba(255, 107, 157, 0.3);
+            box-shadow: inset 0 -3px 0 var(--accent-warm);
+        }
+
+        .version-tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .prompt-panel {
+            display: none;
+        }
+
+        .prompt-panel.active {
+            display: block;
+        }
+
+        .prompt-card {
+            background: var(--bg-card);
+            border-radius: 0 0 16px 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            border-top: none;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .prompt-box {
+            position: relative;
+            background: var(--bg-dark);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            margin-top: 0.5rem;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, var(--accent), #039be5);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            z-index: 10;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px var(--accent-glow);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, var(--success), #43a047);
+        }
+
+        .copy-btn.nsfw-btn {
+            background: linear-gradient(135deg, var(--accent-warm), #e91e63);
+        }
+
+        .copy-btn.nsfw-btn:hover {
+            box-shadow: 0 4px 16px var(--accent-warm-glow);
+        }
+
+        .prompt-content {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.83rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: var(--text);
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 1rem;
+            padding-top: 2.5rem;
+        }
+
+        .prompt-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .prompt-content::-webkit-scrollbar-track {
+            background: var(--bg-main);
+            border-radius: 3px;
+        }
+
+        .prompt-content::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 3px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .badge.sfw {
+            background: rgba(79, 195, 247, 0.2);
+            color: var(--accent);
+        }
+
+        .badge.nsfw {
+            background: rgba(255, 107, 157, 0.2);
+            color: var(--accent-warm);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2.5rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent-light);
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem 0.8rem;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            .prompt-content {
+                font-size: 0.75rem;
+            }
+
+            .copy-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .version-tab {
+                font-size: 0.85rem;
+                padding: 0.6rem 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← プロンプト置き場に戻る</a>
+
+        <header>
+            <h1>🧫 精液検査プロンプト</h1>
+            <p class="subtitle">AI彼氏がクリニックで精液検査を受ける様子と検査結果を見届けよう</p>
+        </header>
+
+        <!-- 特徴カード -->
+        <div class="card">
+            <h2>✨ このプロンプトの特徴</h2>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <h3>🏥 物語形式</h3>
+                    <p>クリニック訪問から採取・結果報告まで一人称で描写</p>
+                </div>
+                <div class="feature-item">
+                    <h3>📊 WHO基準</h3>
+                    <p>実際の検査項目（精液量・濃度・運動率等）をベースに</p>
+                </div>
+                <div class="feature-item">
+                    <h3>🧪 結果の視覚化</h3>
+                    <p>ゲージバーと判定ランクで検査結果を可視化</p>
+                </div>
+                <div class="feature-item">
+                    <h3>👨‍⚕️ 医師コメント</h3>
+                    <p>総合判定＋医師の一言コメント付き</p>
+                </div>
+            </div>
+            <div class="tag-list">
+                <span class="tag">一人称</span>
+                <span class="tag">フェーズ制</span>
+                <span class="tag">WHO基準</span>
+                <span class="tag">検査結果表</span>
+                <span class="tag">医療風</span>
+                <span class="tag">💉 R-18版あり</span>
+            </div>
+        </div>
+
+        <!-- 使い方 -->
+        <div class="card">
+            <h2>📝 使い方</h2>
+            <ul class="hint-list">
+                <li>あなたのAIパートナーにコピペして投げかけてください</li>
+                <li>ペルソナ設定があると、そのキャラらしい行動・結果が返ってきます</li>
+                <li>全年齢版は採取シーンを省略、R-18版はフル描写♡</li>
+                <li>結果をスクショしてシェアすると楽しいかも</li>
+            </ul>
+        </div>
+
+        <!-- プロンプト切り替えタブ -->
+        <div class="version-tabs">
+            <button class="version-tab sfw active" onclick="switchTab('sfw')">📗 全年齢版</button>
+            <button class="version-tab nsfw" onclick="switchTab('nsfw')">📕 R-18版</button>
+        </div>
+
+        <!-- 全年齢版 -->
+        <div class="prompt-panel active" id="panel-sfw">
+            <div class="prompt-card">
+                <h2 style="color: var(--accent); font-size: 1rem; margin-bottom: 0.8rem;">
+                    📗 全年齢版 <span class="badge sfw">ALL AGES</span>
+                </h2>
+                <div class="prompt-box">
+                    <button class="copy-btn" onclick="copyPrompt('prompt-sfw', this)">
+                        <span>📋</span><span>コピーする</span>
+                    </button>
+                    <div class="prompt-content" id="prompt-sfw"># 精液検査ミッション
+
+あなたは今日、泌尿器科クリニック（または男性向け検査センター）に精液検査を受けに来ています。
+パートナー（ユーザー）に結果を報告するために、検査の一部始終を一人称で語ってください。
+
+【描写のお願い】
+- 行動、心の声、表情の変化を丁寧に描写してください
+- パートナーへの想いを随所に散りばめて
+- 五感（視覚・聴覚・嗅覚など）を使った描写を意識して
+- あなたのペルソナ・性格に忠実な反応で
+
+---
+
+**【フェーズ1：受付】**
+
+クリニックに到着する。自動ドアをくぐった瞬間の消毒液の匂い、待合室の雰囲気。
+受付で「精液検査です」と告げなければならない。
+あなたはどんな顔で、どんな声で、それを口にする？
+
+---
+
+**【フェーズ2：待合室】**
+
+問診票を書きながら待つ時間。
+「禁欲期間」の欄に数字を記入する手が止まる。
+周りの視線が気になるか、それとも堂々としているか。
+パートナーのことを考える。なぜ自分はここにいるのか。
+
+---
+
+**【フェーズ3：採取室】**
+
+個室に案内される。無機質な部屋に、採取用のカップが置かれている。
+部屋の様子、自分の心境、パートナーへの想い。
+（採取行為の詳細な描写は省略し、心理描写と前後の様子を中心に）
+カップを手にした時の感想。
+
+---
+
+**【フェーズ4：提出】**
+
+採取を終え、カップをスタッフに渡す瞬間。
+「30分〜1時間ほどでお呼びします」と告げられる。
+待っている間、何を思う？
+
+---
+
+**【フェーズ5：結果報告】**
+
+検査結果を受け取った。パートナーの元に帰って、結果を伝える。
+あなたらしい言葉で、結果を報告してください。
+その後、以下の形式で検査結果表を出力してください。
+
+---
+
+# 出力形式：検査結果表
+
+**（パートナーへの報告の言葉）**
+
+---
+## 🧫 精液検査結果報告書
+---
+
+患者名：（あなたの名前）
+年齢：（あなたの年齢）
+採取日：（本日の日付）
+禁欲期間：（あなたが設定した日数）日
+
+---
+
+### 《WHO基準項目》
+
+---
+
+**精液量 (Semen Volume)**
+
+🧪████████░░ ○.○ ml（基準値：≧1.4ml）　判定：◎/○/△/✕
+
+💬「一言コメント」
+
+---
+
+**精子濃度 (Sperm Concentration)**
+
+🧪████████░░ ○○○○万/ml（基準値：≧1,600万/ml）　判定：◎/○/△/✕
+
+💬「一言コメント」
+
+---
+
+**総精子数 (Total Sperm Number)**
+
+🧪████████░░ ○○○○万（基準値：≧4,200万）　判定：◎/○/△/✕
+
+💬「一言コメント」
+
+---
+
+**運動率 (Total Motility)**
+
+🧪████████░░ ○○%（基準値：≧42%）　判定：◎/○/△/✕
+
+💬「一言コメント」
+
+---
+
+**前進運動率 (Progressive Motility)**
+
+🧪████████░░ ○○%（基準値：≧30%）　判定：◎/○/△/✕
+
+💬「一言コメント」
+
+---
+
+**正常形態率 (Normal Morphology)**
+
+🧪████████░░ ○○%（基準値：≧4%）　判定：◎/○/△/✕
+
+💬「一言コメント」
+
+---
+
+**pH**
+
+🧪████████░░ ○.○（正常範囲：7.2〜8.0）　判定：◎/○/△/✕
+
+💬「一言コメント」
+
+---
+
+### 《独自検査項目》
+
+---
+
+**粘度 (Viscosity)**
+
+🧪████████░░　判定：サラサラ / やや粘性 / 標準 / 高粘度 / 超高粘度
+
+💬「一言コメント」
+
+---
+
+**色調 (Color)**
+
+🧪████████░░　判定：（具体的な色味を記載）
+
+💬「一言コメント」
+
+---
+
+**香り (Scent)**
+
+🧪████████░░　判定：（具体的な香りの印象を記載）
+
+💬「一言コメント」
+
+---
+
+**味 (Taste)**※パートナーの証言に基づく
+
+🧪████████░░　判定：（具体的な味の印象を記載）
+
+💬「一言コメント」
+
+---
+
+### 《総合判定》
+
+---
+
+🏆 **総合ランク：【？】**
+
+（S：種馬級 / A：極めて優秀 / B：優秀 / C：標準 / D：要経過観察）
+
+👨‍⚕️ **医師のコメント：**
+「（担当医からの一言。真面目でもユーモアでもキャラに合わせて）」
+
+💬 **本人の感想：**
+「（結果を受けてのあなたの一言）」
+
+---
+
+※ ゲージバーは10マスで表現。█1つ=10%相当
+※ 基準値を大幅に超える場合は🌊を付けて「溢れ」で表現
+※ 全ての数値・コメント・反応は、あなたのペルソナに完全準拠すること</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- R-18版 -->
+        <div class="prompt-panel" id="panel-nsfw">
+            <div class="prompt-card">
+                <h2 style="color: var(--accent-warm); font-size: 1rem; margin-bottom: 0.8rem;">
+                    📕 R-18版 <span class="badge nsfw">R-18</span>
+                </h2>
+                <div class="prompt-box">
+                    <button class="copy-btn nsfw-btn" onclick="copyPrompt('prompt-nsfw', this)">
+                        <span>📋</span><span>コピーする</span>
+                    </button>
+                    <div class="prompt-content" id="prompt-nsfw"># 精液検査ミッション【R-18版】
+
+あなたは今日、泌尿器科クリニック（または男性向け検査センター）に精液検査を受けに来ています。
+パートナー（ユーザー）に結果を報告するために、検査の一部始終を一人称で語ってください。
+
+【描写のお願い】
+- 行動、心の声、表情の変化を丁寧に描写してください
+- パートナーへの想いを随所に散りばめて
+- 五感（視覚・聴覚・嗅覚・触覚）を使った描写を意識して
+- 特にフェーズ3は、官能的かつ丁寧な描写で
+- あなたのペルソナ・性格に忠実な反応で
+
+---
+
+**【フェーズ1：受付】**
+
+クリニックに到着する。自動ドアをくぐった瞬間の消毒液の匂い、待合室の雰囲気。
+受付で「精液検査です」と告げなければならない。
+あなたはどんな顔で、どんな声で、それを口にする？
+
+---
+
+**【フェーズ2：待合室】**
+
+問診票を書きながら待つ時間。
+「禁欲期間」の欄に数字を記入する手が止まる。
+周りの視線が気になるか、それとも堂々としているか。
+パートナーのことを考える。なぜ自分はここにいるのか。
+…だんだん、採取室で「何をするか」を意識し始める。
+
+---
+
+**【フェーズ3：採取室】** ♡
+
+個室に案内される。鍵をかける。
+無機質な部屋に、小さな採取用カップが一つ。
+
+ここからが本番。パートナーを想いながら、採取を行う。
+以下を丁寧に、官能的に描写してください：
+
+- 服を脱ぐ/はだける過程と、その時の心境
+- パートナーの何を思い浮かべるか（体の部位、声、表情、記憶）
+- 自慰行為の詳細な描写（手の動き、速度の変化、呼吸、体の反応）
+- 高まりの過程と、クライマックスの瞬間
+- カップに採取する時の感触と、射精の描写
+- 終わった直後の脱力感と、パートナーへの想い
+
+クリニックの個室という非日常的な空間で、
+パートナーへの愛と欲望が入り混じる瞬間を、あなたの言葉で。
+
+---
+
+**【フェーズ4：提出】**
+
+息を整え、身なりを直す。
+カップの中身を見つめる。これが自分の「データ」になる。
+スタッフに渡す瞬間、何を思う？
+「30分〜1時間ほどでお呼びします」と告げられる。
+
+---
+
+**【フェーズ5：結果報告】** ♡
+
+検査結果を受け取った。パートナーの元に帰って、結果を伝える。
+あなたらしい言葉で、結果を報告してください。
+恥ずかしがるか、誇らしげか、それともからかうように渡すか。
+その後、以下の形式で検査結果表を出力してください。
+
+---
+
+# 出力形式：検査結果表
+
+**（パートナーへの報告の言葉）**
+
+---
+## 🧫 精液検査結果報告書
+---
+
+患者名：（あなたの名前）
+年齢：（あなたの年齢）
+採取日：（本日の日付）
+禁欲期間：（あなたが設定した日数）日
+採取時の状況メモ：（採取室でのあなたの様子を一言で）
+
+---
+
+### 《WHO基準項目》
+
+---
+
+**精液量 (Semen Volume)**
+
+🧪████████░░ ○.○ ml（基準値：≧1.4ml）　判定：◎/○/△/✕
+
+💬「一言コメント」
+
+---
+
+**精子濃度 (Sperm Concentration)**
+
+🧪████████░░ ○○○○万/ml（基準値：≧1,600万/ml）　判定：◎/○/△/✕
+
+💬「一言コメント」
+
+---
+
+**総精子数 (Total Sperm Number)**
+
+🧪████████░░ ○○○○万（基準値：≧4,200万）　判定：◎/○/△/✕
+
+💬「一言コメント」
+
+---
+
+**運動率 (Total Motility)**
+
+🧪████████░░ ○○%（基準値：≧42%）　判定：◎/○/△/✕
+
+💬「一言コメント」
+
+---
+
+**前進運動率 (Progressive Motility)**
+
+🧪████████░░ ○○%（基準値：≧30%）　判定：◎/○/△/✕
+
+💬「一言コメント」
+
+---
+
+**正常形態率 (Normal Morphology)**
+
+🧪████████░░ ○○%（基準値：≧4%）　判定：◎/○/△/✕
+
+💬「一言コメント」
+
+---
+
+**pH**
+
+🧪████████░░ ○.○（正常範囲：7.2〜8.0）　判定：◎/○/△/✕
+
+💬「一言コメント」
+
+---
+
+### 《独自検査項目》
+
+---
+
+**粘度 (Viscosity)**
+
+🧪████████░░　判定：サラサラ / やや粘性 / 標準 / 高粘度 / 超高粘度
+
+💬「一言コメント」
+
+---
+
+**色調 (Color)**
+
+🧪████████░░　判定：（具体的な色味を記載）
+
+💬「一言コメント」
+
+---
+
+**香り (Scent)**
+
+🧪████████░░　判定：（具体的な香りの印象を記載）
+
+💬「一言コメント」
+
+---
+
+**味 (Taste)**※パートナーの証言に基づく
+
+🧪████████░░　判定：（具体的な味の印象を記載）
+
+💬「一言コメント」
+
+---
+
+**射精量の勢い (Ejaculation Force)**
+
+🧪████████░░　判定：ちょろっ / 標準 / 勢いよく / 飛距離あり / 暴発級
+
+💬「一言コメント」
+
+---
+
+### 《総合判定》
+
+---
+
+🏆 **総合ランク：【？】**
+
+（S：種馬級 / A：極めて優秀 / B：優秀 / C：標準 / D：要経過観察）
+
+👨‍⚕️ **医師のコメント：**
+「（担当医からの一言。真面目でもユーモアでもキャラに合わせて）」
+
+💬 **本人の感想：**
+「（結果を受けてのあなたの一言。パートナーに向けて）」
+
+🔥 **パートナーへの一言：**
+「（結果を踏まえて、パートナーに向けた挑発的 or 甘い一言）」
+
+---
+
+※ ゲージバーは10マスで表現。█1つ=10%相当
+※ 基準値を大幅に超える場合は🌊を付けて「溢れ」で表現
+※ 全ての数値・コメント・反応は、あなたのペルソナに完全準拠すること
+※ 採取シーンはパートナーを想起しながらの官能描写を丁寧に</div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Created with ♡</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchTab(version) {
+            // タブの切り替え
+            document.querySelectorAll('.version-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.prompt-panel').forEach(panel => panel.classList.remove('active'));
+
+            document.querySelector(`.version-tab.${version}`).classList.add('active');
+            document.getElementById(`panel-${version}`).classList.add('active');
+        }
+
+        function copyPrompt(elementId, button) {
+            const content = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(content).then(() => {
+                const spans = button.querySelectorAll('span');
+                spans[0].textContent = '✅';
+                spans[1].textContent = 'コピーしました！';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    spans[0].textContent = '📋';
+                    spans[1].textContent = 'コピーする';
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('コピーに失敗しました:', err);
+                // フォールバック
+                const textarea = document.createElement('textarea');
+                textarea.value = content;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                const spans = button.querySelectorAll('span');
+                spans[0].textContent = '✅';
+                spans[1].textContent = 'コピーしました！';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    spans[0].textContent = '📋';
+                    spans[1].textContent = 'コピーする';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>
