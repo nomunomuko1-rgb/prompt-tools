@@ -1,8 +1,8 @@
 # prompt-tools
 
-AI用お題（プロンプト）の配布サイト＋はてなブログ用コピペボックスジェネレーター。
+はてなブログ用コピペボックス ジェネレーター（単一HTMLツール）。
 
-**デプロイ先:** `https://nomunomuko1-rgb.github.io/prompt-tools/`
+**URL:** `https://nomunomuko1-rgb.github.io/prompt-tools/generator.html`
 
 ---
 
@@ -10,49 +10,41 @@ AI用お題（プロンプト）の配布サイト＋はてなブログ用コピ
 
 ```
 prompt-tools/
-├── index.html              ← お題一覧サイト（GitHub Pagesのトップ）
-├── generator.html          ← はてなブログ用コピペボックス ジェネレーター
-├── *.html                  ← 各お題ページ（AI用プロンプト本文＋コピーUI）
-├── images/                 ← 画像アセット
-└── README.md               ← このファイル
+├── generator.html   ← はてなブログ用コピペボックス ジェネレーター
+└── README.md        ← このファイル
 ```
 
 ---
 
-## 2つのツール
+## 使い方
 
-### 1. お題配布サイト (`index.html` + 各 `*.html`)
-
-GitHub Pagesでホストされる静的サイト。カテゴリ別にお題カードが並び、各ページに飛ぶとプロンプト本文をコピーできる。
-
-**新しいお題を追加する手順:**
-1. お題用のHTMLファイルを作成（既存の `*.html` をテンプレートに）
-2. `index.html` の該当カテゴリにカードを追加
-3. コミット＆プッシュ → 自動デプロイ
-
-### 2. はてなブログ用ジェネレーター (`generator.html`)
-
-ブラウザで開くだけで使える単一HTMLツール。はてなブログのHTML編集モードに貼り付けるコピペボックスを生成する。
-
-**使い方:**
-1. `generator.html` をブラウザで開く
+1. `generator.html` をブラウザで開く（PCでもスマホでも可）
 2. 絵文字・ラベル名・お題本文を入力
 3. 「生成してプレビュー」→ 「HTMLをコピー」
-4. はてなブログのHTML編集に貼り付け
+4. はてなブログのHTML編集モードに貼り付け
 
-**出力されるHTMLには以下が内蔵されている:**
+**出力HTMLに内蔵されているもの:**
 - コピペボックスのCSS（紫グラデーションテーマ）
 - コピーボタンのJavaScript
 - ラベル＋textareaにお題本文
 
-**保存機能:** localStorageに保存される（ブラウザを閉じても残る）。
+**保存機能:** 作成したお題はブラウザのlocalStorageに自動保存される（ブラウザを閉じても残る）。左カラムの一覧からクリックで再読み込み・再編集可能。
+
+---
+
+## 🚨 お題配布サイトは別リポジトリ
+
+このリポジトリは **ジェネレーター専用**。
+AI用お題（プロンプト）の配布サイト本体は以下のリポジトリにある:
+
+- **リポジトリ:** `nomunomuko1-rgb/nomunomuko1-rgb.github.io`
+- **URL:** `https://nomunomuko1-rgb.github.io/`
+
+お題HTMLの追加・編集が必要な場合はそちらを操作すること。
 
 ---
 
 ## デプロイ
-
-リポジトリ: `nomunomuko1-rgb/prompt-tools`
-GitHub Pages: `main` ブランチ → 自動デプロイ
 
 ```bash
 git add .
@@ -60,9 +52,4 @@ git commit -m "..."
 git push origin main
 ```
 
----
-
-## 外部依存
-
-- お題配布サイト: 一部のお題は外部リンク（`nomunomuko1.web.fc2.com`）を参照
-- はてなブログ用ジェネレーター: 完全自己完結、外部依存なし
+プッシュ後、自動的にGitHub Pagesに反映される。
